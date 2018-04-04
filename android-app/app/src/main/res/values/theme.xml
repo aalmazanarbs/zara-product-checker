@@ -1,0 +1,36 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <!-- URL, floating ..<item name="colorAccent">@color/colorAccent</item>-->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppCompatAlertDialogStyleNewProduct" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!--<item name="colorAccent">#FFCC00</item>
+        <item name="android:textColorPrimary">#5fa3d0</item>
+        <item name="android:background">@android:color/holo_blue_light</item>-->
+        <item name="android:windowAnimationStyle">@style/GrowFromRightBottomAnimation</item>
+    </style>
+
+    <style name="AppCompatAlertDialogStyleProductInfo" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowAnimationStyle">@style/GrowFromCenterAnimation</item>
+    </style>
+
+    <style name="GrowFromRightBottomAnimation">
+        <item name="android:windowEnterAnimation">@anim/grow_in_right_bottom</item>
+        <item name="android:windowExitAnimation">@anim/grow_out_right_bottom</item>
+    </style>
+
+    <style name="GrowFromCenterAnimation">
+        <item name="android:windowEnterAnimation">@anim/grow_in_center</item>
+        <item name="android:windowExitAnimation">@anim/grow_out_center</item>
+    </style>
+</resources>

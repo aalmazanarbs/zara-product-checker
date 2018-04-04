@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Card -->
+    <dimen name="image_card_view">135dp</dimen>
+    <dimen name="padding_card_view">2dp</dimen>
+    <!-- Nav header -->
+    <dimen name="nav_header_vertical_spacing">16dp</dimen>
+    <dimen name="nav_header_height">160dp</dimen>
+    <dimen name="profile_width">75dp</dimen>
+    <dimen name="profile_height">75dp</dimen>
+    <dimen name="nav_header_padding">16dp</dimen>
+    <dimen name="info_icons_space">5dp</dimen>
+    <!-- Network container -->
+    <dimen name="network_state_container_height">35dp</dimen>
+    <dimen name="network_state_container_position">-35dp</dimen>
+    <!-- New Product Dialog Builder -->
+    <dimen name="dialog_header_margin_top">30dp</dimen>
+    <dimen name="dialog_elements_margin_top">15dp</dimen>
+    <dimen name="dialog_elements_margin_sides">30dp</dimen>
+</resources>

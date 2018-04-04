@@ -1,0 +1,8 @@
+aPIBase: "https://www.zara.com/es/es/products-details?"
+aPIParam: "productIds[]="
+aPISuffix: "&ajax=true"
+
+imageBase: "http://static.zara.net/photos//"
+imageSize: "/w/400/"
+imageFormat: ".jpg"
+imageTs: "?ts="

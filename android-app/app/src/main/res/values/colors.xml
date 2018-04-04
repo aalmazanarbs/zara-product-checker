@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimaryDark">#455A64</color>
+    <color name="colorPrimary">#607D8B</color>
+    <color name="card_background">#F2F2F2</color>455A64
+    <color name="container_card_background">#E7E7E7</color>
+    <color name="network_state_container_background">#6e6e6e</color>
+    <color name="network_state_disconnected">#fd6c67</color>
+</resources>
