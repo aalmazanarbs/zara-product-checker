@@ -16,7 +16,7 @@ public class APIHelper {
         String productID = null;
 
         // Check url like https://www.zara.com/es/es/blusa-bordado-perforado-p07521067.html?v1=5671069&v2=805003
-        Pattern p = Pattern.compile("\\w*\\\\?v1=([0-9]{7})");
+        Pattern p = Pattern.compile("\\w*\\\\?v1=([0-9]{7,8})");
         Matcher m = p.matcher(url);
 
         if (m.find() && m.groupCount() == 1) {
