@@ -22,11 +22,13 @@ import com.gade.zaraproductcheckerapp.R;
 import com.gade.zaraproductchecker.UIFormatter;
 import com.gade.zaraproductcheckerapp.activities.MainActivity;
 import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
-import com.gade.zaraproductcheckerapp.util.NetUtil;
-import com.gade.zaraproductcheckerapp.util.UIUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.gade.zaraproductcheckerapp.util.NetUtil.shouldOpenURLInChromeCustomTabs;
+import static com.gade.zaraproductcheckerapp.util.UIUtil.base64StringToBitmap;
+import static com.gade.zaraproductcheckerapp.util.UIUtil.showShortToast;
 
 public class ListProductInfoAdapter extends RecyclerView.Adapter<ListProductInfoAdapter.ListProductInfoViewHolder> {
 
@@ -92,7 +94,7 @@ public class ListProductInfoAdapter extends RecyclerView.Adapter<ListProductInfo
 
         final ProductInfo productInfo = productsInfo.get(listPosition);
 
-        final Bitmap bitmapProductImage = UIUtil.stringBase64ToBitmap(productInfo.getImageBase64());
+        final Bitmap bitmapProductImage = base64StringToBitmap(productInfo.getImageBase64());
         if (bitmapProductImage != null) {
             productImage.setImageBitmap(bitmapProductImage);
         } else {
@@ -125,12 +127,12 @@ public class ListProductInfoAdapter extends RecyclerView.Adapter<ListProductInfo
         }
 
         if (!productInfo.getUrl().isEmpty()) {
-            cardView.setOnClickListener(view -> NetUtil.shouldOpenURLInChromeCustomTabs(mainActivity, productInfo.getUrl()));
+            cardView.setOnClickListener(view -> shouldOpenURLInChromeCustomTabs(mainActivity, productInfo.getUrl()));
         }
 
         productMoreInfo.setOnClickListener(view -> showMoreInfoPopUp(productInfo));
 
-        productNotFound.setOnClickListener(view -> UIUtil.showShortToast(mainActivity, mainActivity.getResources().getString(R.string.product_not_found_info)));
+        productNotFound.setOnClickListener(view -> showShortToast(mainActivity, mainActivity.getResources().getString(R.string.product_not_found_info)));
 
         setAnimation(listProductViewHolder.container);
     }

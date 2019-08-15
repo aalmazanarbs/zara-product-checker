@@ -22,7 +22,7 @@ public class ProductInfoViewModel extends AndroidViewModel {
         this.productInfoDao = AppDatabase.getDatabase(application).productInfoDao();
     }
 
-    public Completable addProductstInfo(final List<ProductInfo> productsInfo) {
+    public Completable addProductsInfo(final List<ProductInfo> productsInfo) {
         return Completable.fromAction(() -> {
             for (final ProductInfo productInfo: productsInfo) {
                 productInfo.setAdded(new Date());
@@ -37,5 +37,4 @@ public class ProductInfoViewModel extends AndroidViewModel {
     public Completable removeProductInfo(final ProductInfo productInfo) {
         return Completable.fromAction(() -> productInfoDao.delete(productInfo));
     }
-
 }

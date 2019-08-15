@@ -34,13 +34,18 @@ import com.gade.zaraproductcheckerapp.dialogs.NewProductAlertDialogBuilder;
 import com.gade.zaraproductcheckerapp.handlers.ProductCheckerHandler;
 import com.gade.zaraproductcheckerapp.services.ZaraProductCheckerService;
 import com.gade.zaraproductcheckerapp.util.NetUtil;
-import com.gade.zaraproductcheckerapp.util.RXUtil;
-import com.gade.zaraproductcheckerapp.util.UIUtil;
 import com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil;
 
 import java.util.List;
 
 import io.reactivex.disposables.CompositeDisposable;
+
+import static com.gade.zaraproductcheckerapp.util.NetUtil.isValidURL;
+import static com.gade.zaraproductcheckerapp.util.RXUtil.applyCompletableSchedulers;
+import static com.gade.zaraproductcheckerapp.util.UIUtil.animateViewSlideDown;
+import static com.gade.zaraproductcheckerapp.util.UIUtil.animateViewToZero;
+import static com.gade.zaraproductcheckerapp.util.UIUtil.showMessageSnackbar;
+import static com.gade.zaraproductcheckerapp.util.UIUtil.showShortToast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -151,11 +156,11 @@ public class MainActivity extends AppCompatActivity {
         networkStateReceiver = new NetUtil.NetworkStateReceiver();
         networkStateReceiver.setNetworkStateReceiverListener(isConnected -> {
             if (isConnected) {
-                UIUtil.animateViewToZero(networkStateContainerRelativeLayout);
-                UIUtil.animateViewToZero(swipeRefreshLayout);
+                animateViewToZero(networkStateContainerRelativeLayout);
+                animateViewToZero(swipeRefreshLayout);
             } else {
-                UIUtil.animateViewSlideDown(MainActivity.this, swipeRefreshLayout, R.dimen.network_state_container_height);
-                UIUtil.animateViewSlideDown(MainActivity.this, networkStateContainerRelativeLayout, R.dimen.network_state_container_height);
+                animateViewSlideDown(MainActivity.this, swipeRefreshLayout, R.dimen.network_state_container_height);
+                animateViewSlideDown(MainActivity.this, networkStateContainerRelativeLayout, R.dimen.network_state_container_height);
             }
         });
 
@@ -189,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
             zaraURL = Uri.parse(intent.getStringExtra(Intent.EXTRA_TEXT));
         }
 
-        if (zaraURL != null && NetUtil.isValidURL(zaraURL.toString())) {
+        if (zaraURL != null && isValidURL(zaraURL.toString())) {
             showNewProductDialog(zaraURL.toString());
         }
     }
@@ -212,20 +217,20 @@ public class MainActivity extends AppCompatActivity {
         final NewProductAlertDialogBuilder newProductAlertDialogBuilder = new NewProductAlertDialogBuilder(MainActivity.this, URL);
         newProductAlertDialogBuilder.setOnAddNewProductAlertDialogListener(productsInfo ->
             disposables.add(
-                productInfoViewModel.addProductstInfo(productsInfo)
-                    .compose(RXUtil.applyCompletableSchedulers())
+                productInfoViewModel.addProductsInfo(productsInfo)
+                    .compose(applyCompletableSchedulers())
                     .subscribe(() -> {
                         for(final ProductInfo productInfo: productsInfo) {
                             ((ListProductInfoAdapter) listProductAdapter).addProductToList(productInfo);
                         }
 
-                        UIUtil.showMessageSnackbar(coordinatorLayout, MainActivity.this.getResources().getQuantityString(R.plurals.product_added, productsInfo.size()));
+                        showMessageSnackbar(coordinatorLayout, MainActivity.this.getResources().getQuantityString(R.plurals.product_added, productsInfo.size()));
                     }, e -> {
                         if (productsInfo.size() == 1) {
-                            UIUtil.showShortToast(MainActivity.this,
+                            showShortToast(MainActivity.this,
                                     MainActivity.this.getResources().getString(R.string.product_duplicated, productsInfo.get(0).getName(), productsInfo.get(0).getDesiredSize(), productsInfo.get(0).getDesiredColor()));
                         } else {
-                            UIUtil.showShortToast(MainActivity.this, MainActivity.this.getResources().getString(R.string.products_duplicated));
+                            showShortToast(MainActivity.this, MainActivity.this.getResources().getString(R.string.products_duplicated));
                         }
                     })
             )
@@ -256,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
                         if (!undoRemove[0]) {
                             disposables.add(
                                 productInfoViewModel.removeProductInfo(productInfo)
-                                    .compose(RXUtil.applyCompletableSchedulers())
+                                    .compose(applyCompletableSchedulers())
                                     .subscribe()
                             );
                         }

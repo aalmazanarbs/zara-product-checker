@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Log;
 
 import com.gade.zaraproductchecker.APIHelper;
 import com.gade.zaraproductchecker.ProductAPI;
@@ -26,6 +25,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import static com.gade.zaraproductcheckerapp.util.NetUtil.hasNetworkConnection;
+
 public class ZaraProductCheckerService extends IntentService {
 
     public ZaraProductCheckerService() {
@@ -35,7 +36,7 @@ public class ZaraProductCheckerService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         boolean sendAlwaysBroadcast = intent != null && intent.getAction() != null && intent.getAction().equals(ProductCheckerHandler.PRODUCTS_INFO_BROADCAST_LIST_ALWAYS);
-        if (!NetUtil.hasNetworkConnection(getApplicationContext()) && !sendAlwaysBroadcast) {
+        if (!hasNetworkConnection(getApplicationContext()) && !sendAlwaysBroadcast) {
             return;
         }
 
@@ -45,7 +46,7 @@ public class ZaraProductCheckerService extends IntentService {
         final List<ProductInfo> productsInfo = productInfoDao.getAll();
 
         if (productsInfo.size() > 0 &&
-            NetUtil.hasNetworkConnection(getApplicationContext()) &&
+            hasNetworkConnection(getApplicationContext()) &&
             canCheckProducts(getApplicationContext(), sendAlwaysBroadcast)) {
 
             thereAreChangesInProducts = detectChangesUpdateProductsAndNotify(productsInfo, productInfoDao);

@@ -19,16 +19,16 @@ public class ProductCheckerHandler {
     public static final String PRODUCTS_INFO_BROADCAST_LIST_ALWAYS = "com.gade.zaraproductchecker.broadcastproductsinfo.list.always";
 
     public static void startStopCheckProductsService(@NonNull Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        Boolean checkProductsInBackgroundPreference = sharedPreferences.getBoolean(context.getString(R.string.check_products_in_background), true);
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        final boolean checkProductsInBackgroundPreference = sharedPreferences.getBoolean(context.getString(R.string.check_products_in_background), true);
 
-        Intent zaraProductCheckerIntent = new Intent(context, ZaraProductCheckerService.class);
-        PendingIntent zaraProductCheckerPendingIntent = PendingIntent.getService(context,  0, zaraProductCheckerIntent,
+        final Intent zaraProductCheckerIntent = new Intent(context, ZaraProductCheckerService.class);
+        final PendingIntent zaraProductCheckerPendingIntent = PendingIntent.getService(context,  0, zaraProductCheckerIntent,
                 (checkProductsInBackgroundPreference) ? PendingIntent.FLAG_CANCEL_CURRENT : PendingIntent.FLAG_UPDATE_CURRENT);
 
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
-            int inexactFrequencyFiveMinutes = 5 * 60 * 1000;
+            final int inexactFrequencyFiveMinutes = 5 * 60 * 1000;
 
             if (checkProductsInBackgroundPreference) {
                 alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,

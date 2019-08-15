@@ -22,14 +22,15 @@ import com.gade.zaraproductcheckerapp.R;
 import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
 import com.gade.zaraproductcheckerapp.dialogs.model.NewProductDialogState;
 import com.gade.zaraproductcheckerapp.util.NetUtil;
-import com.gade.zaraproductcheckerapp.util.RXUtil;
-import com.gade.zaraproductcheckerapp.util.UIUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
+
+import static com.gade.zaraproductcheckerapp.util.RXUtil.applySingleSchedulers;
+import static com.gade.zaraproductcheckerapp.util.UIUtil.showShortToast;
 
 public class NewProductAlertDialogBuilder extends AlertDialog.Builder {
 
@@ -103,7 +104,7 @@ public class NewProductAlertDialogBuilder extends AlertDialog.Builder {
     private final View.OnClickListener searchAddNewProductListener = view ->
         disposables.add(
             processDialog()
-                    .compose(RXUtil.applySingleSchedulers())
+                    .compose(applySingleSchedulers())
                     .doOnSubscribe(__ -> {
                         hideKeyBoard();
                         newProductProgressBar.setVisibility(View.VISIBLE);
@@ -116,10 +117,10 @@ public class NewProductAlertDialogBuilder extends AlertDialog.Builder {
                         }
                     }, exception -> {
                         if (exception instanceof ZaraErrorException) {
-                            UIUtil.showShortToast(getContext(), exception.getMessage());
+                            showShortToast(getContext(), exception.getMessage());
                         } else {
                             exception.printStackTrace();
-                            UIUtil.showShortToast(getContext(), getContext().getString(R.string.dialog_unknown_error));
+                            showShortToast(getContext(), getContext().getString(R.string.dialog_unknown_error));
                         }
                     })
     );

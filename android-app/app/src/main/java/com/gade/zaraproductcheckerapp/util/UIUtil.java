@@ -26,7 +26,7 @@ final public class UIUtil {
         Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG).show();
     }
 
-    public static Bitmap stringBase64ToBitmap(String base64String) {
+    public static Bitmap base64StringToBitmap(String base64String) {
         Bitmap bmp = null;
         if (base64String != null && !base64String.isEmpty()) {
             byte[] decodedString = Base64.decode(base64String, Base64.DEFAULT);

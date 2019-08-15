@@ -116,7 +116,7 @@ final public class NetUtil {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (networkStateReceiverListener != null) {
-                networkStateReceiverListener.onNetworkStateChanged(NetUtil.hasNetworkConnection(context));
+                networkStateReceiverListener.onNetworkStateChanged(hasNetworkConnection(context));
             }
         }
 

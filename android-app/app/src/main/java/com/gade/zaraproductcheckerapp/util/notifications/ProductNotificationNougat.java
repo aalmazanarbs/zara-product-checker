@@ -2,13 +2,18 @@ package com.gade.zaraproductcheckerapp.util.notifications;
 
 import android.app.Notification;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
 import com.gade.zaraproductcheckerapp.R;
 import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
-import com.gade.zaraproductcheckerapp.util.UIUtil;
+
+import static com.gade.zaraproductcheckerapp.util.UIUtil.base64StringToBitmap;
+import static com.gade.zaraproductcheckerapp.util.UIUtil.getCircleBitmap;
+import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.generateOpenMainActivityPendingIntent;
 
 public class ProductNotificationNougat implements IProductNotify {
 
@@ -40,7 +45,7 @@ public class ProductNotificationNougat implements IProductNotify {
                 .setGroupSummary(true)
                 .setGroup(NOTIFICATIONS_GROUP_KEY)
                 .setAutoCancel(true)
-                .setContentIntent(ProductNotificationUtil.generateOpenMainActivityPendingIntent(context))
+                .setContentIntent(generateOpenMainActivityPendingIntent(context))
                 .setSubText(context.getString(R.string.detect_changes_products_check))
                 .setSmallIcon(R.drawable.ic_notification)
                 .setShowWhen(false);
@@ -59,16 +64,25 @@ public class ProductNotificationNougat implements IProductNotify {
                 .setDefaults(NotificationCompat.DEFAULT_LIGHTS | NotificationCompat.DEFAULT_SOUND)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setAutoCancel(true)
-                .setContentIntent(ProductNotificationUtil.generateOpenMainActivityPendingIntent(context))
+                .setContentIntent(generateOpenMainActivityPendingIntent(context))
                 .setWhen(System.currentTimeMillis())
                 .setShowWhen(true)
                 .setContentTitle(productInfo.getName())
                 .setContentText(message)
-                .setLargeIcon(UIUtil.getCircleBitmap(UIUtil.stringBase64ToBitmap(productInfo.getImageBase64())));
+                .setLargeIcon(getCircleBitmap(getProductInfoNotificationImage(productInfo, context)));
 
         Notification notificationStacked = notificationCompatStackedBuilder.build();
         notificationStacked.flags |= NotificationCompat.FLAG_ONLY_ALERT_ONCE | NotificationCompat.FLAG_AUTO_CANCEL;
 
         notificationManagerCompat.notify(notificationID, notificationStacked);
+    }
+
+    private Bitmap getProductInfoNotificationImage(ProductInfo productInfo, Context context) {
+        final Bitmap bitmapProductImage = base64StringToBitmap(productInfo.getImageBase64());
+        if (bitmapProductImage != null) {
+            return bitmapProductImage;
+        }
+
+        return BitmapFactory.decodeResource(context.getResources(), R.drawable.no_product_image);
     }
 }
