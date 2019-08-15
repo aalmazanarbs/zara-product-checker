@@ -2,7 +2,7 @@ package com.gade.zaraproductcheckerapp.util.notifications;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
 

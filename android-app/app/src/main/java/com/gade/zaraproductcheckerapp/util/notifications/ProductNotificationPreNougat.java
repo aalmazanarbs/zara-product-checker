@@ -3,8 +3,8 @@ package com.gade.zaraproductcheckerapp.util.notifications;
 import android.app.Notification;
 import android.content.Context;
 import android.service.notification.StatusBarNotification;
-import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import android.text.Html;
 import android.text.Spanned;
 

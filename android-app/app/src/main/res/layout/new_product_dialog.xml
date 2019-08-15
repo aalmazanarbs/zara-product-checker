@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/product_url_label"
         android:layout_width="match_parent"
@@ -13,13 +13,13 @@
         android:layout_marginStart="@dimen/dialog_elements_margin_sides"
         android:layout_marginEnd="@dimen/dialog_elements_margin_sides">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/product_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/dialog_product_url"/>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Spinner
         android:id="@+id/product_size"

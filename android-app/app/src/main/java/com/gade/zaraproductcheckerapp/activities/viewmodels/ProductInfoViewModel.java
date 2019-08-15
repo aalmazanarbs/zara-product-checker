@@ -1,8 +1,8 @@
 package com.gade.zaraproductcheckerapp.activities.viewmodels;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.annotation.NonNull;
 
 import com.gade.zaraproductcheckerapp.db.AppDatabase;
 import com.gade.zaraproductcheckerapp.db.daos.ProductInfoDao;
