@@ -2,8 +2,9 @@ package com.gade.zaraproductchecker;
 
 import java.util.Locale;
 
-public class UIFormatter {
+public final class UIFormatter {
 
+    @SuppressWarnings("unused")
     public static String productPrice (String price) {
         double decimalPrice = Double.parseDouble(price) / 100;
 
@@ -14,6 +15,7 @@ public class UIFormatter {
         }
     }
 
+    @SuppressWarnings("unused")
     public static String productAvailability (String size) {
         String humanReadableSize;
         switch (size) {

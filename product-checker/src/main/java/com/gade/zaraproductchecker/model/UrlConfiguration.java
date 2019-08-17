@@ -1,6 +1,6 @@
 package com.gade.zaraproductchecker.model;
 
-public class URLConfiguration {
+public final class UrlConfiguration {
 
     private String aPIBase;
     private String aPIParam;
@@ -15,6 +15,7 @@ public class URLConfiguration {
         return aPIBase;
     }
 
+    @SuppressWarnings("unused")
     public void setAPIBase(String aPIBase) {
         this.aPIBase = aPIBase;
     }
@@ -23,6 +24,7 @@ public class URLConfiguration {
         return aPIParam;
     }
 
+    @SuppressWarnings("unused")
     public void setAPIParam(String aPIParam) {
         this.aPIParam = aPIParam;
     }
@@ -31,6 +33,7 @@ public class URLConfiguration {
         return aPISuffix;
     }
 
+    @SuppressWarnings("unused")
     public void setAPISuffix(String aPISuffix) {
         this.aPISuffix = aPISuffix;
     }
@@ -39,6 +42,7 @@ public class URLConfiguration {
         return imageBase;
     }
 
+    @SuppressWarnings("unused")
     public void setImageBase(String imageBase) {
         this.imageBase = imageBase;
     }
@@ -47,6 +51,7 @@ public class URLConfiguration {
         return imageSize;
     }
 
+    @SuppressWarnings("unused")
     public void setImageSize(String imageSize) {
         this.imageSize = imageSize;
     }
@@ -55,6 +60,7 @@ public class URLConfiguration {
         return imageFormat;
     }
 
+    @SuppressWarnings("unused")
     public void setImageFormat(String imageFormat) {
         this.imageFormat = imageFormat;
     }
@@ -63,6 +69,7 @@ public class URLConfiguration {
         return imageTs;
     }
 
+    @SuppressWarnings("unused")
     public void setImageTs(String imageTs) {
         this.imageTs = imageTs;
     }

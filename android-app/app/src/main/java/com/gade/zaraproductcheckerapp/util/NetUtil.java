@@ -20,6 +20,7 @@ import com.gade.zaraproductcheckerapp.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 final public class NetUtil {
@@ -39,15 +40,15 @@ final public class NetUtil {
         return URLUtil.isValidUrl(url);
     }
 
-    public static boolean hasNetworkConnection(@NonNull Context context) {
+    public static boolean hasNetworkConnection(@NonNull final Context context) {
         try {
-            ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            final ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            final NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
             if (networkInfo != null && networkInfo.isConnected()) {
                 return true;
             }
 
-            Network[] networks = connectivityManager.getAllNetworks();
+            final Network[] networks = connectivityManager.getAllNetworks();
             if (networks != null) {
                 for (Network network : networks) {
                     if (network!= null && connectivityManager.getNetworkInfo(network).isConnected()) {
@@ -89,24 +90,14 @@ final public class NetUtil {
     }
 
     public static String downloadImageAsBase64(final URL url) {
-        String base64Image = "";
-        if (url == null) {
-            return base64Image;
+        try(final InputStream urlInputStream = url.openConnection().getInputStream()) {
+            final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            BitmapFactory.decodeStream(urlInputStream)
+                         .compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            return Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
+        } catch (IOException | NullPointerException e) {
+            return "";
         }
-
-        Bitmap bitmap;
-        try {
-            bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-        } catch (IOException e) {
-            return base64Image;
-        }
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] imgBytes = byteArrayOutputStream.toByteArray();
-        base64Image = Base64.encodeToString(imgBytes, Base64.DEFAULT);
-
-        return base64Image;
     }
 
     public final static class NetworkStateReceiver extends BroadcastReceiver {
@@ -128,6 +119,4 @@ final public class NetUtil {
             void onNetworkStateChanged(boolean isConnected);
         }
     }
-
 }
-

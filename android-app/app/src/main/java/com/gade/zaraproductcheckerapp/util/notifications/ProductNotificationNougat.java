@@ -15,7 +15,7 @@ import static com.gade.zaraproductcheckerapp.util.UIUtil.base64StringToBitmap;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.getCircleBitmap;
 import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.generateOpenMainActivityPendingIntent;
 
-public class ProductNotificationNougat implements IProductNotify {
+public class ProductNotificationNougat implements ProductNotify {
 
     private final String NOTIFICATIONS_GROUP_KEY = "PRODUCT_CHANGES_NOTIFICATIONS";
 

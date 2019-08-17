@@ -6,7 +6,7 @@ import io.reactivex.SingleTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class RXUtil {
+public class RxUtil {
 
     public static <T> ObservableTransformer<T, T> applyObservableSchedulers() {
         return observable -> observable

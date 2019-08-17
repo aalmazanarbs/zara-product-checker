@@ -13,15 +13,13 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 
-import com.gade.zaraproductchecker.APIHelper;
-import com.gade.zaraproductchecker.ProductAPI;
-import com.gade.zaraproductchecker.ProductJSONHelper;
+import com.gade.zaraproductchecker.ProductApi;
+import com.gade.zaraproductchecker.ProductJsonHelper;
 import com.gade.zaraproductchecker.model.ProductData;
 import com.gade.zaraproductchecker.model.ProductStatus;
 import com.gade.zaraproductcheckerapp.R;
 import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
 import com.gade.zaraproductcheckerapp.dialogs.model.NewProductDialogState;
-import com.gade.zaraproductcheckerapp.util.NetUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +27,10 @@ import java.util.List;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 
-import static com.gade.zaraproductcheckerapp.util.RXUtil.applySingleSchedulers;
+import static com.gade.zaraproductchecker.ApiHelper.searchProductStatus;
+import static com.gade.zaraproductchecker.util.OptionalUtil.ifPresentOrElse;
+import static com.gade.zaraproductcheckerapp.util.NetUtil.downloadImageAsBase64;
+import static com.gade.zaraproductcheckerapp.util.RxUtil.applySingleSchedulers;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.showShortToast;
 
 public class NewProductAlertDialogBuilder extends AlertDialog.Builder {
@@ -46,7 +47,7 @@ public class NewProductAlertDialogBuilder extends AlertDialog.Builder {
     // Interface for Activities
     private OnAddNewProductAlertDialogListener onAddNewProductAlertDialogListener;
 
-    private class ZaraErrorException extends Exception {
+    private class ZaraErrorException extends RuntimeException {
         ZaraErrorException(String message) {
             super(message);
         }
@@ -173,59 +174,56 @@ public class NewProductAlertDialogBuilder extends AlertDialog.Builder {
     }
 
     private void getZaraDataPhase(final String productURL) throws ZaraErrorException {
-        final String zaraJSONResponse = ProductAPI.doCall(productURL);
-        if (zaraJSONResponse == null) {
-            throw new ZaraErrorException(getContext().getString(R.string.dialog_url_error));
-        }
+        ifPresentOrElse(
+                ProductApi.doCall(productURL),
+                zaraJSONResponse -> {
+                    final List<String> sizes = ProductJsonHelper.getSizesFromFromJSONString(zaraJSONResponse);
+                    final List<String> colors = ProductJsonHelper.getColorsFromFromJSONString(zaraJSONResponse);
+                    if (sizes.isEmpty() || colors.isEmpty()) {
+                        throw new ZaraErrorException(getContext().getString(R.string.dialog_zara_response_error));
+                    }
+                    newProductDialogState.setSizes(cloneList(sizes));
+                    newProductDialogState.setColors(cloneList(colors));
 
-        final List<String> sizes = ProductJSONHelper.getSizesFromFromJSONString(zaraJSONResponse);
-        final List<String> colors = ProductJSONHelper.getColorsFromFromJSONString(zaraJSONResponse);
-        if (sizes == null || sizes.size() < 1 || colors == null || colors.size() < 1) {
-            throw new ZaraErrorException(getContext().getString(R.string.dialog_zara_response_error));
-        }
-        newProductDialogState.setSizes(cloneList(sizes));
-        newProductDialogState.setColors(cloneList(colors));
+                    if (sizes.size() > 1) {
+                        sizes.add(getContext().getString(R.string.dialog_all_sizes));
+                    }
+                    if (colors.size() > 1) {
+                        colors.add(getContext().getString(R.string.dialog_all_colors));
+                    }
 
-        if (sizes.size() > 1) {
-            sizes.add(getContext().getString(R.string.dialog_all_sizes));
-        }
-        if (colors.size() > 1) {
-            colors.add(getContext().getString(R.string.dialog_all_colors));
-        }
+                    activity.runOnUiThread(() -> {
+                        final ArrayAdapter<String> colorsArrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, colors);
+                        colorsArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        newProductColorSpinner.setAdapter(colorsArrayAdapter);
+                        newProductColorSpinner.setVisibility(View.VISIBLE);
 
-        activity.runOnUiThread(() -> {
-            final ArrayAdapter<String> colorsArrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, colors);
-            colorsArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            newProductColorSpinner.setAdapter(colorsArrayAdapter);
-            newProductColorSpinner.setVisibility(View.VISIBLE);
+                        final ArrayAdapter<String> sizesArrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, sizes);
+                        sizesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        newProductSizeSpinner.setAdapter(sizesArrayAdapter);
+                        newProductSizeSpinner.setVisibility(View.VISIBLE);
 
-            final ArrayAdapter<String> sizesArrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, sizes);
-            sizesArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            newProductSizeSpinner.setAdapter(sizesArrayAdapter);
-            newProductSizeSpinner.setVisibility(View.VISIBLE);
+                        newProductAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setText(getContext().getString(R.string.dialog_add));
 
-            newProductAlertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setText(getContext().getString(R.string.dialog_add));
+                        newProductURLEditText.setEnabled(false);
+                    });
 
-            newProductURLEditText.setEnabled(false);
-        });
-
-        newProductDialogState.setZaraJSONResponse(zaraJSONResponse);
-        newProductDialogState.setDoneGetZaraDataPhase(true);
+                    newProductDialogState.setZaraJSONResponse(zaraJSONResponse);
+                    newProductDialogState.setDoneGetZaraDataPhase(true);
+                },
+                () -> { throw new ZaraErrorException(getContext().getString(R.string.dialog_url_error)); }
+        );
     }
 
     private List<ProductInfo> constructProductsInfo(final String productURL) throws ZaraErrorException {
-        final ProductData productData = ProductJSONHelper.getProductDataFromJSONString(newProductDialogState.getZaraJSONResponse());
-
-        if (productData == null) {
-            throw new ZaraErrorException(getContext().getString(R.string.dialog_product_error));
-        }
-
-        return createProductsInfoFromUserEntries(productData, productURL);
+        return ProductJsonHelper.getProductDataFromJSONString(newProductDialogState.getZaraJSONResponse())
+                .map(productData -> createProductsInfoFromUserEntries(productData, productURL))
+                .orElseThrow(() -> new ZaraErrorException(getContext().getString(R.string.dialog_product_error)));
     }
 
-    private List<ProductInfo> createProductsInfoFromUserEntries(final ProductData productData, final String productURL) {
-        final String productImageBase64 = NetUtil.downloadImageAsBase64(productData.getImageURL());
-        final List<ProductStatus> productStatuses = ProductJSONHelper.getProductStatuses(newProductDialogState.getZaraJSONResponse());
+    private List<ProductInfo> createProductsInfoFromUserEntries(final ProductData productData, final String productURL) throws ZaraErrorException {
+        final String productImageBase64 = downloadImageAsBase64(productData.getImageURL());
+        final List<ProductStatus> productStatuses = ProductJsonHelper.getProductStatuses(newProductDialogState.getZaraJSONResponse());
 
         final String desiredSize = newProductSizeSpinner.getSelectedItem().toString();
         final String desiredColor = newProductColorSpinner.getSelectedItem().toString();
@@ -242,21 +240,21 @@ public class NewProductAlertDialogBuilder extends AlertDialog.Builder {
         return productsInfo;
     }
 
-    private ProductInfo createProductInfo(final ProductData productData, final List<ProductStatus> productStatuses, final String productURL, final String productImageBase64, final String desiredSize, final String desiredColor) {
-
-        final ProductStatus productStatus = APIHelper.searchProductStatus(productStatuses, productData.getAPIId(), desiredSize, desiredColor);
-        final ProductInfo productInfo = new ProductInfo();
-
-        productInfo.setAPIId(productData.getAPIId());
-        productInfo.setName(productData.getName());
-        productInfo.setUrl(productURL);
-        productInfo.setImageBase64(productImageBase64);
-        productInfo.setDesiredSize(desiredSize);
-        productInfo.setDesiredColor(desiredColor);
-        productInfo.setAvailability(productStatus.getAvailability());
-        productInfo.setPrice(productStatus.getPrice());
-
-        return productInfo;
+    private ProductInfo createProductInfo(final ProductData productData, final List<ProductStatus> productStatuses, final String productURL, final String productImageBase64, final String desiredSize, final String desiredColor) throws ZaraErrorException {
+        return searchProductStatus(productStatuses, productData.getAPIId(), desiredSize, desiredColor)
+                .map(productStatus -> {
+                    final ProductInfo productInfo = new ProductInfo();
+                    productInfo.setApiId(productData.getAPIId());
+                    productInfo.setName(productData.getName());
+                    productInfo.setUrl(productURL);
+                    productInfo.setImageBase64(productImageBase64);
+                    productInfo.setDesiredSize(desiredSize);
+                    productInfo.setDesiredColor(desiredColor);
+                    productInfo.setAvailability(productStatus.getAvailability());
+                    productInfo.setPrice(productStatus.getPrice());
+                    return productInfo;
+                })
+                .orElseThrow(() -> new ZaraErrorException(getContext().getString(R.string.dialog_product_error)));
     }
 
     private <T> List<T> cloneList(final List<T> list) {

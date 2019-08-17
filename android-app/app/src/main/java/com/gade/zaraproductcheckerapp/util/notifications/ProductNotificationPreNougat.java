@@ -11,7 +11,7 @@ import android.text.Spanned;
 import com.gade.zaraproductcheckerapp.R;
 import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
 
-public class ProductNotificationPreNougat implements IProductNotify {
+public class ProductNotificationPreNougat implements ProductNotify {
 
     @Override
     @SuppressWarnings("deprecation")

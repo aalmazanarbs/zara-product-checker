@@ -22,7 +22,7 @@ public class ProductInfo {
 
     // DB fields
     @ColumnInfo(name = "api_id")
-    private String APIId;
+    private String apiId;
     private String name;
     private String url;
     @ColumnInfo(name = "image_base64")
@@ -54,12 +54,12 @@ public class ProductInfo {
         this.added = added;
     }
 
-    public String getAPIId() {
-        return APIId;
+    public String getApiId() {
+        return apiId;
     }
 
-    public void setAPIId(String APIId) {
-        this.APIId = APIId;
+    public void setApiId(String APIId) {
+        this.apiId = APIId;
     }
 
     public String getName() {

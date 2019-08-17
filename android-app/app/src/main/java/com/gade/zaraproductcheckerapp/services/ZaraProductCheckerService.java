@@ -9,23 +9,28 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
 
-import com.gade.zaraproductchecker.APIHelper;
-import com.gade.zaraproductchecker.ProductAPI;
-import com.gade.zaraproductchecker.ProductJSONHelper;
+import com.gade.zaraproductchecker.ProductApi;
+import com.gade.zaraproductchecker.ProductJsonHelper;
 import com.gade.zaraproductcheckerapp.R;
 import com.gade.zaraproductchecker.model.ProductStatus;
 import com.gade.zaraproductcheckerapp.db.AppDatabase;
 import com.gade.zaraproductcheckerapp.db.daos.ProductInfoDao;
 import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
 import com.gade.zaraproductcheckerapp.handlers.ProductCheckerHandler;
-import com.gade.zaraproductcheckerapp.util.NetUtil;
 import com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationManager;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
+import static com.gade.zaraproductchecker.ApiHelper.searchProductStatus;
+import static com.gade.zaraproductchecker.util.OptionalUtil.ifPresentOrElse;
+import static com.gade.zaraproductchecker.util.StringUtil.isNotEmpty;
 import static com.gade.zaraproductcheckerapp.util.NetUtil.hasNetworkConnection;
+import static com.gade.zaraproductcheckerapp.util.NetUtil.isConnectedToWifi;
+import static java.lang.Boolean.FALSE;
 
 public class ZaraProductCheckerService extends IntentService {
 
@@ -57,77 +62,68 @@ public class ZaraProductCheckerService extends IntentService {
         }
     }
 
-    private boolean canCheckProducts(@NonNull Context context, boolean sendAlwaysBroadcast) {
+    private boolean canCheckProducts(@NonNull final Context context, final boolean sendAlwaysBroadcast) {
         if (sendAlwaysBroadcast) {
             return true;
         }
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        Boolean checkProductsInBackgroundOnlyWifiPreference = sharedPreferences.getBoolean(context.getString(R.string.check_products_in_background_only_wifi), false);
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        final boolean checkProductsInBackgroundOnlyWifiPreference = sharedPreferences.getBoolean(context.getString(R.string.check_products_in_background_only_wifi), false);
 
         if (!checkProductsInBackgroundOnlyWifiPreference) {
             return true;
         }
 
-        return NetUtil.isConnectedToWifi(context);
+        return isConnectedToWifi(context);
     }
 
     private boolean detectChangesUpdateProductsAndNotify(@NonNull final List<ProductInfo> productsInfo,
                                                          @NonNull final ProductInfoDao productInfoDao) {
+        final Set<String> productIDs = productsInfo.stream().map(ProductInfo::getApiId).collect(Collectors.toSet());
 
-        HashSet<String> productIDs = new HashSet<>();
-        for (ProductInfo productInfo : productsInfo) {
-            productIDs.add(productInfo.getAPIId());
-        }
-
-        final List<ProductStatus> productStatuses = ProductJSONHelper.getProductStatuses(ProductAPI.doCall(productIDs));
-
-        if (productStatuses == null || productStatuses.isEmpty()) {
-            return false;
-        }
-
-        return analyzeChangesAndUpdateProductsDB(productsInfo, productStatuses, productInfoDao);
+        return ProductApi.doCall(productIDs)
+                         .map(ProductJsonHelper::getProductStatuses)
+                         .map(productStatuses -> analyzeChangesAndUpdateProductsDB(productsInfo, productStatuses, productInfoDao))
+                         .orElse(FALSE);
     }
 
     private boolean analyzeChangesAndUpdateProductsDB(final List<ProductInfo> productsInfo,
                                                       final List<ProductStatus> productStatuses,
                                                       final ProductInfoDao productInfoDao) {
 
-        boolean someProductHasChanged = false;
+        final AtomicBoolean someProductHasChanged = new AtomicBoolean(false);
 
-        for (int i = 0; i < productsInfo.size(); i++) {
-            final ProductStatus productStatus = APIHelper.searchProductStatus(productStatuses, productsInfo.get(i).getAPIId(), productsInfo.get(i).getDesiredSize(), productsInfo.get(i).getDesiredColor());
-            if (productStatus != null) {
-                // Check availability
-                if (productStatus.getAvailability() != null &&
-                    !productStatus.getAvailability().isEmpty() &&
-                    !productsInfo.get(i).getAvailability().equals(productStatus.getAvailability())) {
+        productsInfo.forEach(productInfo ->
+                ifPresentOrElse(
+                    searchProductStatus(productStatuses, productInfo.getApiId(), productInfo.getDesiredSize(), productInfo.getDesiredColor()),
+                    productStatus -> {
+                        // Check availability
+                        if (isNotEmpty(productStatus.getAvailability()) &&
+                            !productInfo.getAvailability().equals(productStatus.getAvailability())) {
 
-                    productsInfo.get(i).setAvailability(productStatus.getAvailability());
-                    productsInfo.get(i).setSizeStatusChanges(true);
-                }
+                            productInfo.setAvailability(productStatus.getAvailability());
+                            productInfo.setSizeStatusChanges(true);
+                        }
 
-                // Check price
-                if (productStatus.getPrice() != null &&
-                    !productStatus.getPrice().isEmpty() &&
-                    !productsInfo.get(i).getPrice().equals(productStatus.getPrice())) {
+                        // Check price
+                        if (isNotEmpty(productStatus.getPrice()) &&
+                            !productInfo.getPrice().equals(productStatus.getPrice())) {
 
-                    productsInfo.get(i).setPrice(productStatus.getPrice());
-                    productsInfo.get(i).setPriceChanges(true);
-                }
+                            productInfo.setPrice(productStatus.getPrice());
+                            productInfo.setPriceChanges(true);
+                        }
 
-                if (productsInfo.get(i).hasSizeStatusChanged() || productsInfo.get(i).hasPriceChanged()) {
-                    if (productInfoDao.update(productsInfo.get(i)) == 1) {
-                        someProductHasChanged = true;
-                        ProductNotificationManager.notify(getApplicationContext(), productsInfo.get(i));
-                    }
-                }
-            } else {
-                productsInfo.get(i).setNotFound(true);
-            }
-        }
+                        if (productInfo.hasSizeStatusChanged() || productInfo.hasPriceChanged()) {
+                            if (productInfoDao.update(productInfo) == 1) {
+                                someProductHasChanged.set(true);
+                                ProductNotificationManager.notify(getApplicationContext(), productInfo);
+                            }
+                        }
+                    },
+                    () -> productInfo.setNotFound(true))
+        );
 
-        return someProductHasChanged;
+        return someProductHasChanged.get();
     }
 
     private void sendLocalBroadcastProductsInfo(List<ProductInfo> productsInfo) {

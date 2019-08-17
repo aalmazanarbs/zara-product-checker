@@ -1,32 +1,23 @@
 package com.gade.zaraproductchecker.model;
 
-public class ProductStatus {
+public final class ProductStatus {
 
-    private String APIId;
+    private String apiId;
     private String price;
     private String color;
     private String size;
     private String availability;
 
-    public ProductStatus() {
-    }
-
-    public ProductStatus(String APIId, String price, String color, String size, String availability) {
-        this.APIId = APIId;
-        this.price = price;
-        this.color = color;
-        this.size = size;
-        this.availability = availability;
-    }
-
-    public String getAPIId() {
-        return APIId;
+    @SuppressWarnings("unused")
+    public String getApiId() {
+        return apiId;
     }
 
     public void setAPIId(String APIId) {
-        this.APIId = APIId;
+        this.apiId = APIId;
     }
 
+    @SuppressWarnings("unused")
     public String getPrice() {
         return price;
     }
@@ -35,6 +26,7 @@ public class ProductStatus {
         this.price = price;
     }
 
+    @SuppressWarnings("unused")
     public String getColor() {
         return color;
     }
@@ -43,6 +35,7 @@ public class ProductStatus {
         this.color = color;
     }
 
+    @SuppressWarnings("unused")
     public String getSize() {
         return size;
     }
@@ -51,6 +44,7 @@ public class ProductStatus {
         this.size = size;
     }
 
+    @SuppressWarnings("unused")
     public String getAvailability() {
         return availability;
     }

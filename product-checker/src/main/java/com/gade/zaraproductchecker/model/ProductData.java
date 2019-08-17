@@ -3,12 +3,13 @@ package com.gade.zaraproductchecker.model;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class ProductData {
+public final class ProductData {
 
     private String APIId;
     private String name;
     private URL imageURL;
 
+    @SuppressWarnings("unused")
     public String getAPIId() {
         return APIId;
     }
@@ -17,6 +18,7 @@ public class ProductData {
         this.APIId = APIId;
     }
 
+    @SuppressWarnings("unused")
     public String getName() {
         return name;
     }
@@ -25,6 +27,7 @@ public class ProductData {
         this.name = name;
     }
 
+    @SuppressWarnings("unused")
     public URL getImageURL() {
         return imageURL;
     }

@@ -41,7 +41,7 @@ import java.util.List;
 import io.reactivex.disposables.CompositeDisposable;
 
 import static com.gade.zaraproductcheckerapp.util.NetUtil.isValidURL;
-import static com.gade.zaraproductcheckerapp.util.RXUtil.applyCompletableSchedulers;
+import static com.gade.zaraproductcheckerapp.util.RxUtil.applyCompletableSchedulers;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.animateViewSlideDown;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.animateViewToZero;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.showMessageSnackbar;
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.refresh_list) {
             loadOrRefreshProductList();
         }
@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void removedProductSnackbar(final ProductInfo productInfo, final int productPosition) {
-        final boolean[] undoRemove = {false};
+        final boolean[] undoRemove = { false };
 
         Snackbar.make(coordinatorLayout,
                       getResources().getString(R.string.undo_product_info, productInfo.getName()),
