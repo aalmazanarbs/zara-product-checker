@@ -2,7 +2,6 @@ package com.gade.zaraproductcheckerapp.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -11,12 +10,18 @@ import android.graphics.Rect;
 import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
+import com.bumptech.glide.request.RequestOptions;
+import com.gade.zaraproductcheckerapp.R;
 import com.google.android.material.snackbar.Snackbar;
-import android.util.Base64;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 final public class UIUtil {
+
+    public final static RequestOptions DEFAULT_IMAGE_REQUEST_OPTIONS = new RequestOptions().placeholder(R.drawable.no_product_image)
+                                                                                           .error(R.drawable.no_product_image)
+                                                                                           .fallback(R.drawable.no_product_image);
 
     public static void showShortToast(@NonNull Context context, final String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
@@ -24,16 +29,6 @@ final public class UIUtil {
 
     public static void showMessageSnackbar(@NonNull final CoordinatorLayout coordinatorLayout, final String message) {
         Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG).show();
-    }
-
-    public static Bitmap base64StringToBitmap(String base64String) {
-        Bitmap bmp = null;
-        if (base64String != null && !base64String.isEmpty()) {
-            byte[] decodedString = Base64.decode(base64String, Base64.DEFAULT);
-            bmp = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        }
-
-        return bmp;
     }
 
     public static Bitmap getCircleBitmap(Bitmap bitmap) {

@@ -16,4 +16,14 @@
             android:defaultValue="false" />
 
     </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:title="@string/preference_category_storage">
+
+        <Preference
+            android:key="@string/storage_clear_cache"
+            android:title="@string/preference_storage_clear_cache"
+            android:summary="@string/preference_storage_clear_cache_summary" />
+
+    </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

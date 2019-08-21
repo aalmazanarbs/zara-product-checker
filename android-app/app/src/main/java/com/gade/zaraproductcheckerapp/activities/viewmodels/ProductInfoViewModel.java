@@ -26,9 +26,9 @@ public class ProductInfoViewModel extends AndroidViewModel {
         return Completable.fromAction(() -> {
             for (final ProductInfo productInfo: productsInfo) {
                 productInfo.setAdded(new Date());
-                final Long insertedUid = productInfoDao.insert(productInfo);
-                if (insertedUid != -1) {
-                    productInfo.setUid(insertedUid);
+                final Long insertedId = productInfoDao.insert(productInfo);
+                if (insertedId != -1) {
+                    productInfo.setId(insertedId);
                 }
             }
         });

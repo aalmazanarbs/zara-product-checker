@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.gade.zaraproductchecker.ApiHelper.buildProductImageURL;
+
 public final class ProductJsonHelper {
 
     @SuppressWarnings("unused")
@@ -35,24 +37,12 @@ public final class ProductJsonHelper {
     @SuppressWarnings("unused")
     public static Optional<ProductData> getProductDataFromJSONString(final String jsonResponse) {
         return getJSONObjectFromString(jsonResponse)
-                .map(productJSON -> {
-                    final ProductData productData = new ProductData();
-                    productData.setAPIId(productJSON.getString("id")); // May contains different ID from URL ID
-
-                    final String name = productJSON.getString("name");
-                    if (name == null || name.isEmpty()) {
-                        productData.setName("No name founded");
-                    } else {
-                        productData.setName(name);
-                    }
-
-                    final JSONObject firstXMedia = productJSON.getJSONArray("xmedia").getJSONObject(0);
-                    productData.setImageURLFromString(ApiHelper.buildProductImageURL(firstXMedia.getString("path"),
-                            firstXMedia.getString("name"),
-                            firstXMedia.getString("timestamp")));
-
-                    return productData;
-                });
+                .map(productJSON -> ProductData.builder()
+                        .withApiId(productJSON.getString("id"))
+                        .withName(productJSON.getString("name"))
+                        .withImageUrl(getProductImageUrlFromFromJSONObject(productJSON))
+                        .build()
+                );
     }
 
     @SuppressWarnings("unused")
@@ -120,5 +110,12 @@ public final class ProductJsonHelper {
 
     private static JSONArray getJSONArrayColorsFromFromJSONObject(final JSONObject productJSON) {
         return productJSON.getJSONObject("detail").getJSONArray("colors");
+    }
+
+    private static String getProductImageUrlFromFromJSONObject(final JSONObject productJSON) {
+        final JSONObject firstXMedia = productJSON.getJSONArray("xmedia").getJSONObject(0);
+        return buildProductImageURL(firstXMedia.getString("path"),
+                                    firstXMedia.getString("name"),
+                                    firstXMedia.getString("timestamp"));
     }
 }

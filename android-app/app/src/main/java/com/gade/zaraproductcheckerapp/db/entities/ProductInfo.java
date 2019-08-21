@@ -16,7 +16,7 @@ import java.util.Date;
 public class ProductInfo {
 
     @PrimaryKey(autoGenerate = true)
-    public Long uid;
+    public Long id;
     @TypeConverters(DateConverter.class)
     private Date added;
 
@@ -25,8 +25,8 @@ public class ProductInfo {
     private String apiId;
     private String name;
     private String url;
-    @ColumnInfo(name = "image_base64")
-    private String imageBase64;
+    @ColumnInfo(name = "image_url")
+    private String imageUrl;
     @ColumnInfo(name = "desired_size")
     private String desiredSize;
     @ColumnInfo(name = "desired_color")
@@ -42,8 +42,8 @@ public class ProductInfo {
     @Ignore
     private Boolean notFound = false;
 
-    public void setUid(Long uid) {
-        this.uid = uid;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Date getAdded() {
@@ -78,12 +78,12 @@ public class ProductInfo {
         this.url = url;
     }
 
-    public String getImageBase64() {
-        return imageBase64;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImageBase64(String imageBase64) {
-        this.imageBase64 = imageBase64;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getDesiredSize() {

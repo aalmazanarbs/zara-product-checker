@@ -14,13 +14,12 @@ import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
 public class ProductNotificationPreNougat implements ProductNotify {
 
     @Override
-    @SuppressWarnings("deprecation")
     public void notify(@NonNull Context context, @NonNull ProductInfo productInfo) {
-        NotificationCompat.InboxStyle notificationMessagesInboxStyle = new NotificationCompat.InboxStyle();
+        final NotificationCompat.InboxStyle notificationMessagesInboxStyle = new NotificationCompat.InboxStyle();
         int displayNumberOfNotifications = 0;
 
         if (ProductNotificationUtil.numberOfActiveNotifications(context) == 1) {
-            CharSequence[] previousMessages = getPreviousMessages(context);
+            final CharSequence[] previousMessages = getPreviousMessages(context);
             if (previousMessages != null) {
                 for (CharSequence previousMessage: previousMessages) {
                     notificationMessagesInboxStyle.addLine(previousMessage);
@@ -43,7 +42,7 @@ public class ProductNotificationPreNougat implements ProductNotify {
             displayNumberOfNotifications += 1;
         }
 
-        NotificationCompat.Builder notificationCompatStackedBuilder = new NotificationCompat.Builder(context)
+        final NotificationCompat.Builder notificationCompatStackedBuilder = new NotificationCompat.Builder(context)
                 .setDefaults(NotificationCompat.DEFAULT_LIGHTS | NotificationCompat.DEFAULT_SOUND)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setSmallIcon(R.drawable.ic_notification)
@@ -54,18 +53,17 @@ public class ProductNotificationPreNougat implements ProductNotify {
                 .setStyle(notificationMessagesInboxStyle)
                 .setContentIntent(ProductNotificationUtil.generateOpenMainActivityPendingIntent(context));
 
-        Notification notificationStacked = notificationCompatStackedBuilder.build();
+        final Notification notificationStacked = notificationCompatStackedBuilder.build();
         notificationStacked.flags |= Notification.FLAG_AUTO_CANCEL | NotificationCompat.FLAG_ONLY_ALERT_ONCE;
 
         ProductNotificationUtil.getNotificationManager(context).notify(0, notificationStacked);
     }
 
     private CharSequence[] getPreviousMessages(@NonNull Context context) {
-        StatusBarNotification[] activeNotifications = ProductNotificationUtil.getActiveNotificationsFromNotificationManager(context);
+        final StatusBarNotification[] activeNotifications = ProductNotificationUtil.getActiveNotificationsFromNotificationManager(context);
         return (activeNotifications != null) ? activeNotifications[0].getNotification().extras.getCharSequenceArray(NotificationCompat.EXTRA_TEXT_LINES) : null;
     }
 
-    @SuppressWarnings("deprecation")
     private Spanned generateHeaderNotificationLine(@NonNull ProductInfo productInfo) {
         return Html.fromHtml("<b>" + productInfo.getName() + "</b>");
     }

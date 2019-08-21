@@ -3,17 +3,27 @@ package com.gade.zaraproductcheckerapp.util.notifications;
 import android.app.Notification;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.gade.zaraproductcheckerapp.R;
 import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
 
-import static com.gade.zaraproductcheckerapp.util.UIUtil.base64StringToBitmap;
+import static com.gade.zaraproductcheckerapp.util.UIUtil.DEFAULT_IMAGE_REQUEST_OPTIONS;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.getCircleBitmap;
 import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.generateOpenMainActivityPendingIntent;
+import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.generatePriceChangedMessage;
+import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.generateSizeChangedMessage;
+import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.getNotificationManager;
+import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.numberOfActiveNotifications;
 
 public class ProductNotificationNougat implements ProductNotify {
 
@@ -21,27 +31,27 @@ public class ProductNotificationNougat implements ProductNotify {
 
     @Override
     public void notify(@NonNull Context context, @NonNull ProductInfo productInfo) {
-        NotificationManagerCompat notificationManagerCompat = ProductNotificationUtil.getNotificationManager(context);
-        int numberOfActiveNotifications = ProductNotificationUtil.numberOfActiveNotifications(context);
+        final NotificationManagerCompat notificationManagerCompat = getNotificationManager(context);
+        final int numberOfActiveNotifications = numberOfActiveNotifications(context);
 
         if (numberOfActiveNotifications == 0) {
             showStackerNotification(notificationManagerCompat, context);
         }
 
-        int notificationID = numberOfActiveNotifications;
+        int notificationId = numberOfActiveNotifications;
         if (productInfo.hasSizeStatusChanged()) {
-            notificationID++;
-            showStackedNotification(notificationManagerCompat, context, productInfo, ProductNotificationUtil.generateSizeChangedMessage(context, productInfo), notificationID);
+            notificationId++;
+            showStackedNotification(notificationManagerCompat, context, productInfo, generateSizeChangedMessage(context, productInfo), notificationId);
         }
 
         if (productInfo.hasPriceChanged()) {
-            notificationID++;
-            showStackedNotification(notificationManagerCompat, context, productInfo, ProductNotificationUtil.generatePriceChangedMessage(context, productInfo), notificationID);
+            notificationId++;
+            showStackedNotification(notificationManagerCompat, context, productInfo, generatePriceChangedMessage(context, productInfo), notificationId);
         }
     }
 
-    private void showStackerNotification(@NonNull NotificationManagerCompat notificationManagerCompat, @NonNull Context context) {
-        NotificationCompat.Builder notificationCompatStackerBuilder = new NotificationCompat.Builder(context)
+    private void showStackerNotification(final NotificationManagerCompat notificationManagerCompat, final Context context) {
+        final NotificationCompat.Builder notificationCompatStackerBuilder = new NotificationCompat.Builder(context)
                 .setGroupSummary(true)
                 .setGroup(NOTIFICATIONS_GROUP_KEY)
                 .setAutoCancel(true)
@@ -50,15 +60,45 @@ public class ProductNotificationNougat implements ProductNotify {
                 .setSmallIcon(R.drawable.ic_notification)
                 .setShowWhen(false);
 
-        Notification notificationStacker = notificationCompatStackerBuilder.build();
+        final Notification notificationStacker = notificationCompatStackerBuilder.build();
         notificationStacker.flags |= NotificationCompat.FLAG_ONLY_ALERT_ONCE | NotificationCompat.FLAG_AUTO_CANCEL;
 
         notificationManagerCompat.notify(0, notificationStacker);
     }
 
-    private void showStackedNotification(@NonNull NotificationManagerCompat notificationManagerCompat, @NonNull Context context, @NonNull ProductInfo productInfo, String message, int notificationID) {
+    private void showStackedNotification(final NotificationManagerCompat notificationManagerCompat,
+                                         final Context context,
+                                         final ProductInfo productInfo,
+                                         final String message,
+                                         final int notificationId) {
+        Glide.with(context)
+             .asBitmap()
+             .load(productInfo.getImageUrl())
+             .apply(DEFAULT_IMAGE_REQUEST_OPTIONS)
+             .into(new CustomTarget<Bitmap>() {
+                 @Override
+                 public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                     showStackedNotification(notificationManagerCompat, context, productInfo, message, notificationId, resource);
+                 }
 
-        NotificationCompat.Builder notificationCompatStackedBuilder = new NotificationCompat.Builder(context)
+                 @Override
+                 public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                     super.onLoadFailed(errorDrawable);
+                     showStackedNotification(notificationManagerCompat, context, productInfo, message, notificationId, ((BitmapDrawable) errorDrawable).getBitmap());
+                 }
+
+                 @Override
+                 public void onLoadCleared(@Nullable Drawable placeholder) { }
+             });
+    }
+
+    private void showStackedNotification(final NotificationManagerCompat notificationManagerCompat,
+                                         final Context context,
+                                         final ProductInfo productInfo,
+                                         final String message,
+                                         final int notificationId,
+                                         final Bitmap productImage) {
+        final NotificationCompat.Builder notificationCompatStackedBuilder = new NotificationCompat.Builder(context)
                 .setGroup(NOTIFICATIONS_GROUP_KEY)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setDefaults(NotificationCompat.DEFAULT_LIGHTS | NotificationCompat.DEFAULT_SOUND)
@@ -69,20 +109,11 @@ public class ProductNotificationNougat implements ProductNotify {
                 .setShowWhen(true)
                 .setContentTitle(productInfo.getName())
                 .setContentText(message)
-                .setLargeIcon(getCircleBitmap(getProductInfoNotificationImage(productInfo, context)));
+                .setLargeIcon(getCircleBitmap(productImage));
 
-        Notification notificationStacked = notificationCompatStackedBuilder.build();
+        final Notification notificationStacked = notificationCompatStackedBuilder.build();
         notificationStacked.flags |= NotificationCompat.FLAG_ONLY_ALERT_ONCE | NotificationCompat.FLAG_AUTO_CANCEL;
 
-        notificationManagerCompat.notify(notificationID, notificationStacked);
-    }
-
-    private Bitmap getProductInfoNotificationImage(ProductInfo productInfo, Context context) {
-        final Bitmap bitmapProductImage = base64StringToBitmap(productInfo.getImageBase64());
-        if (bitmapProductImage != null) {
-            return bitmapProductImage;
-        }
-
-        return BitmapFactory.decodeResource(context.getResources(), R.drawable.no_product_image);
+        notificationManagerCompat.notify(notificationId, notificationStacked);
     }
 }

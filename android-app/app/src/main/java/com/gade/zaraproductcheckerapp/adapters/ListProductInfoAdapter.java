@@ -1,7 +1,6 @@
 package com.gade.zaraproductcheckerapp.adapters;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
@@ -18,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.gade.zaraproductcheckerapp.R;
 import com.gade.zaraproductchecker.UIFormatter;
 import com.gade.zaraproductcheckerapp.activities.MainActivity;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.gade.zaraproductcheckerapp.util.NetUtil.shouldOpenURLInChromeCustomTabs;
-import static com.gade.zaraproductcheckerapp.util.UIUtil.base64StringToBitmap;
+import static com.gade.zaraproductcheckerapp.util.UIUtil.DEFAULT_IMAGE_REQUEST_OPTIONS;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.showShortToast;
 
 public class ListProductInfoAdapter extends RecyclerView.Adapter<ListProductInfoAdapter.ListProductInfoViewHolder> {
@@ -36,7 +36,7 @@ public class ListProductInfoAdapter extends RecyclerView.Adapter<ListProductInfo
     private final Activity mainActivity;
     private RecyclerView recyclerView;
 
-    public ListProductInfoAdapter(Activity activity) {
+    public ListProductInfoAdapter(final Activity activity) {
         this.mainActivity = activity;
         this.productsInfo = new ArrayList<>();
 
@@ -80,7 +80,7 @@ public class ListProductInfoAdapter extends RecyclerView.Adapter<ListProductInfo
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ListProductInfoViewHolder listProductViewHolder , final int listPosition) {
+    public void onBindViewHolder(@NonNull final ListProductInfoViewHolder listProductViewHolder, final int listPosition) {
         final CardView cardView = listProductViewHolder.cardView;
         final ImageView productImage = listProductViewHolder.productImage;
         final TextView productName = listProductViewHolder.productName;
@@ -94,12 +94,10 @@ public class ListProductInfoAdapter extends RecyclerView.Adapter<ListProductInfo
 
         final ProductInfo productInfo = productsInfo.get(listPosition);
 
-        final Bitmap bitmapProductImage = base64StringToBitmap(productInfo.getImageBase64());
-        if (bitmapProductImage != null) {
-            productImage.setImageBitmap(bitmapProductImage);
-        } else {
-            productImage.setImageResource(R.drawable.no_product_image);
-        }
+        Glide.with(productImage.getContext())
+             .load(productInfo.getImageUrl())
+             .apply(DEFAULT_IMAGE_REQUEST_OPTIONS)
+             .into(productImage);
 
         productName.setText(productInfo.getName());
         productSize.setText(productInfo.getDesiredSize());
@@ -157,13 +155,13 @@ public class ListProductInfoAdapter extends RecyclerView.Adapter<ListProductInfo
             }
 
             @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 final int positionRemoved = viewHolder.getAdapterPosition();
                 ((MainActivity) mainActivity).removedProductSnackbar(initRemoveProductFromList(positionRemoved), positionRemoved);
             }
 
             @Override
-            public void onMoved(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, int fromPos, RecyclerView.ViewHolder target, int toPos, int x, int y) {
+            public void onMoved(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, int fromPos, @NonNull RecyclerView.ViewHolder target, int toPos, int x, int y) {
                 super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y);
             }
         });

@@ -29,9 +29,9 @@ import io.reactivex.disposables.CompositeDisposable;
 
 import static com.gade.zaraproductchecker.ApiHelper.searchProductStatus;
 import static com.gade.zaraproductchecker.util.OptionalUtil.ifPresentOrElse;
-import static com.gade.zaraproductcheckerapp.util.NetUtil.downloadImageAsBase64;
 import static com.gade.zaraproductcheckerapp.util.RxUtil.applySingleSchedulers;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.showShortToast;
+import static java.util.Collections.singletonList;
 
 public class NewProductAlertDialogBuilder extends AlertDialog.Builder {
 
@@ -222,32 +222,31 @@ public class NewProductAlertDialogBuilder extends AlertDialog.Builder {
     }
 
     private List<ProductInfo> createProductsInfoFromUserEntries(final ProductData productData, final String productURL) throws ZaraErrorException {
-        final String productImageBase64 = downloadImageAsBase64(productData.getImageURL());
         final List<ProductStatus> productStatuses = ProductJsonHelper.getProductStatuses(newProductDialogState.getZaraJSONResponse());
 
         final String desiredSize = newProductSizeSpinner.getSelectedItem().toString();
         final String desiredColor = newProductColorSpinner.getSelectedItem().toString();
-        final List<String> desiredSizes = desiredSize.equals(getContext().getString(R.string.dialog_all_sizes)) ? newProductDialogState.getSizes() : new ArrayList<String>() {{ this.add(desiredSize); }};
-        final List<String> desiredColors = desiredColor.equals(getContext().getString(R.string.dialog_all_colors)) ? newProductDialogState.getColors() : new ArrayList<String>() {{ this.add(desiredColor); }};
+        final List<String> desiredSizes = desiredSize.equals(getContext().getString(R.string.dialog_all_sizes)) ? newProductDialogState.getSizes() : singletonList(desiredSize);
+        final List<String> desiredColors = desiredColor.equals(getContext().getString(R.string.dialog_all_colors)) ? newProductDialogState.getColors() : singletonList(desiredColor);
         final List<ProductInfo> productsInfo = new ArrayList<>();
 
         for (final String size: desiredSizes) {
             for (final String color: desiredColors) {
-                productsInfo.add(createProductInfo(productData, productStatuses, productURL, productImageBase64, size, color));
+                productsInfo.add(createProductInfo(productData, productStatuses, productURL, size, color));
             }
         }
 
         return productsInfo;
     }
 
-    private ProductInfo createProductInfo(final ProductData productData, final List<ProductStatus> productStatuses, final String productURL, final String productImageBase64, final String desiredSize, final String desiredColor) throws ZaraErrorException {
-        return searchProductStatus(productStatuses, productData.getAPIId(), desiredSize, desiredColor)
+    private ProductInfo createProductInfo(final ProductData productData, final List<ProductStatus> productStatuses, final String productURL, final String desiredSize, final String desiredColor) throws ZaraErrorException {
+        return searchProductStatus(productStatuses, productData.getApiId(), desiredSize, desiredColor)
                 .map(productStatus -> {
                     final ProductInfo productInfo = new ProductInfo();
-                    productInfo.setApiId(productData.getAPIId());
+                    productInfo.setApiId(productData.getApiId());
                     productInfo.setName(productData.getName());
                     productInfo.setUrl(productURL);
-                    productInfo.setImageBase64(productImageBase64);
+                    productInfo.setImageUrl(productData.getImageUrl());
                     productInfo.setDesiredSize(desiredSize);
                     productInfo.setDesiredColor(desiredColor);
                     productInfo.setAvailability(productStatus.getAvailability());

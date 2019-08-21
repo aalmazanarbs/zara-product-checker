@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
@@ -13,15 +11,9 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
-import android.util.Base64;
 import android.webkit.URLUtil;
 
 import com.gade.zaraproductcheckerapp.R;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 final public class NetUtil {
 
@@ -87,17 +79,6 @@ final public class NetUtil {
         }
 
         return false;
-    }
-
-    public static String downloadImageAsBase64(final URL url) {
-        try(final InputStream urlInputStream = url.openConnection().getInputStream()) {
-            final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            BitmapFactory.decodeStream(urlInputStream)
-                         .compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-            return Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
-        } catch (IOException | NullPointerException e) {
-            return "";
-        }
     }
 
     public final static class NetworkStateReceiver extends BroadcastReceiver {

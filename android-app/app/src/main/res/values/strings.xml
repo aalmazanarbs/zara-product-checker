@@ -34,9 +34,13 @@
     <string name="preference_background_checker_summary">This will perform a background check periodically to detect changes in stock or prices</string>
     <string name="preference_background_checker_only_wifi">Only wifi</string>
     <string name="preference_background_checker_only_wifi_summary">Product background checker will only work over wifi data connection</string>
+    <string name="preference_category_storage">Storage</string>
+    <string name="preference_storage_clear_cache">Clear Cache</string>
+    <string name="preference_storage_clear_cache_summary">This will free space in you external storage</string>
     <!-- Settings Preferences -->
     <string name="check_products_in_background">check_products_in_background</string>
     <string name="check_products_in_background_only_wifi">check_products_in_background_only_wifi</string>
+    <string name="storage_clear_cache">storage_clear_cache</string>
     <!-- Notifications -->
     <string name="detect_changes_products_check">Changes in your products</string>
     <string name="has_changed_price_to"> has changed price to </string>
