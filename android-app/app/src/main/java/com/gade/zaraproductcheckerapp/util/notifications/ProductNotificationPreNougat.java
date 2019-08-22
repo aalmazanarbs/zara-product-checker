@@ -61,7 +61,7 @@ public class ProductNotificationPreNougat implements ProductNotify {
 
     private CharSequence[] getPreviousMessages(@NonNull Context context) {
         final StatusBarNotification[] activeNotifications = ProductNotificationUtil.getActiveNotificationsFromNotificationManager(context);
-        return (activeNotifications != null) ? activeNotifications[0].getNotification().extras.getCharSequenceArray(NotificationCompat.EXTRA_TEXT_LINES) : null;
+        return activeNotifications != null ? activeNotifications[0].getNotification().extras.getCharSequenceArray(NotificationCompat.EXTRA_TEXT_LINES) : null;
     }
 
     private Spanned generateHeaderNotificationLine(@NonNull ProductInfo productInfo) {

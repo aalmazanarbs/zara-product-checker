@@ -14,6 +14,9 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import com.bumptech.glide.request.RequestOptions;
 import com.gade.zaraproductcheckerapp.R;
 import com.google.android.material.snackbar.Snackbar;
+
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
@@ -81,5 +84,13 @@ final public class UIUtil {
         viewGroup.animate()
                 .setDuration(500)
                 .translationY(context.getResources().getDimensionPixelSize(id) - 1f);
+    }
+
+    public static Bitmap copy(final Bitmap bitmap) {
+        return bitmap.copy(bitmap.getConfig(), false);
+    }
+
+    public static Bitmap from(final Drawable drawable) {
+        return ((BitmapDrawable) drawable).getBitmap();
     }
 }

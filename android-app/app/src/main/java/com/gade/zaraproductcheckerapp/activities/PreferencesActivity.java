@@ -10,7 +10,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.gade.zaraproductcheckerapp.R;
-import com.gade.zaraproductcheckerapp.handlers.ProductCheckerHandler;
+import com.gade.zaraproductcheckerapp.services.ZaraProductCheckerJobIntentServiceHandler;
 
 import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -64,7 +64,7 @@ public class PreferencesActivity extends AppCompatActivity {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if (getString(R.string.check_products_in_background).equals(key)) {
-                ProductCheckerHandler.startStopCheckProductsService(getActivity().getApplicationContext());
+                ZaraProductCheckerJobIntentServiceHandler.startOrStopPeriodicallyBackground(getActivity().getApplicationContext());
             }
         }
 

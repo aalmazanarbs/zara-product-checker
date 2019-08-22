@@ -1,8 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.gade.zaraproductcheckerapp">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="false"
@@ -16,8 +17,8 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter android:label="@string/app_name_open">
                 <action android:name="android.intent.action.SEND" />
@@ -43,11 +44,20 @@
                 android:value="com.gade.zaraproductcheckerapp.activities.MainActivity" />
         </activity>
 
-        <service android:name="com.gade.zaraproductcheckerapp.services.ZaraProductCheckerService" android:exported="false" />
+        <service
+            android:name="com.gade.zaraproductcheckerapp.services.ZaraProductCheckerJobIntentService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <receiver android:name="com.gade.zaraproductcheckerapp.receivers.DeviceBootCompletedReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="com.gade.zaraproductcheckerapp.receivers.ZaraProductCheckerReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="com.gade.zaraproductcheckerapp.intent.action.PRODUCT_CHECKER" />
             </intent-filter>
         </receiver>
     </application>

@@ -23,13 +23,13 @@ public class ProductNotificationUtil {
     }
 
     static StatusBarNotification[] getActiveNotificationsFromNotificationManager(@NonNull Context context) {
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        return (notificationManager != null) ? notificationManager.getActiveNotifications() : null;
+        final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        return notificationManager != null ? notificationManager.getActiveNotifications() : null;
     }
 
     static int numberOfActiveNotifications(@NonNull Context context) {
-        StatusBarNotification[] activeNotifications = getActiveNotificationsFromNotificationManager(context);
-        return (activeNotifications != null) ? activeNotifications.length : 0;
+        final StatusBarNotification[] activeNotifications = getActiveNotificationsFromNotificationManager(context);
+        return activeNotifications != null ? activeNotifications.length : 0;
     }
 
     static String generateSizeChangedMessage(@NonNull Context context, @NonNull ProductInfo productInfo) {

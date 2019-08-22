@@ -3,7 +3,6 @@ package com.gade.zaraproductcheckerapp.util.notifications;
 import android.app.Notification;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
@@ -18,6 +17,8 @@ import com.gade.zaraproductcheckerapp.R;
 import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
 
 import static com.gade.zaraproductcheckerapp.util.UIUtil.DEFAULT_IMAGE_REQUEST_OPTIONS;
+import static com.gade.zaraproductcheckerapp.util.UIUtil.copy;
+import static com.gade.zaraproductcheckerapp.util.UIUtil.from;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.getCircleBitmap;
 import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.generateOpenMainActivityPendingIntent;
 import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.generatePriceChangedMessage;
@@ -78,13 +79,13 @@ public class ProductNotificationNougat implements ProductNotify {
              .into(new CustomTarget<Bitmap>() {
                  @Override
                  public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                     showStackedNotification(notificationManagerCompat, context, productInfo, message, notificationId, resource);
+                     showStackedNotification(notificationManagerCompat, context, productInfo, message, notificationId, copy(resource));
                  }
 
                  @Override
                  public void onLoadFailed(@Nullable Drawable errorDrawable) {
                      super.onLoadFailed(errorDrawable);
-                     showStackedNotification(notificationManagerCompat, context, productInfo, message, notificationId, ((BitmapDrawable) errorDrawable).getBitmap());
+                     showStackedNotification(notificationManagerCompat, context, productInfo, message, notificationId, copy(from(errorDrawable)));
                  }
 
                  @Override

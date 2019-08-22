@@ -15,7 +15,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase appDatabase;
 
-    public static AppDatabase getDatabase(Context context) {
+    public static AppDatabase getDatabase(final Context context) {
         if (appDatabase == null) {
             appDatabase = Room.databaseBuilder(context.getApplicationContext(),
                                                AppDatabase.class,

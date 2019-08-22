@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
+import com.gade.zaraproductcheckerapp.services.ZaraProductCheckerJobIntentServiceHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -31,21 +33,23 @@ import com.gade.zaraproductcheckerapp.activities.viewmodels.ProductInfoViewModel
 import com.gade.zaraproductcheckerapp.adapters.ListProductInfoAdapter;
 import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
 import com.gade.zaraproductcheckerapp.dialogs.NewProductAlertDialogBuilder;
-import com.gade.zaraproductcheckerapp.handlers.ProductCheckerHandler;
-import com.gade.zaraproductcheckerapp.services.ZaraProductCheckerService;
 import com.gade.zaraproductcheckerapp.util.NetUtil;
-import com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil;
 
 import java.util.List;
 
 import io.reactivex.disposables.CompositeDisposable;
 
+import static com.gade.zaraproductcheckerapp.services.ZaraProductCheckerJobIntentService.PRODUCTS_INFO_REQUEST_RESULT_BROADCAST;
+import static com.gade.zaraproductcheckerapp.services.ZaraProductCheckerJobIntentService.PRODUCTS_INFO_REQUEST_RESULT_DATA;
 import static com.gade.zaraproductcheckerapp.util.NetUtil.isValidURL;
 import static com.gade.zaraproductcheckerapp.util.RxUtil.applyCompletableSchedulers;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.animateViewSlideDown;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.animateViewToZero;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.showMessageSnackbar;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.showShortToast;
+import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.NOTIFICATIONS_EXTRA_INTENT;
+import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.NOTIFICATIONS_INTENT_CODE;
+import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.getNotificationManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -74,14 +78,13 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         setListeners();
         checkOpenedWithURL(getIntent());
-        ProductCheckerHandler.startStopCheckProductsService(this.getApplication());
+        ZaraProductCheckerJobIntentServiceHandler.startOrStopPeriodicallyBackground(this.getApplication());
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(MainActivity.this)
-                .registerReceiver((productsInfoBroadcastReceiver), new IntentFilter(ProductCheckerHandler.PRODUCTS_INFO_BROADCAST));
+        LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver((productsInfoBroadcastReceiver), new IntentFilter(PRODUCTS_INFO_REQUEST_RESULT_BROADCAST));
 
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -142,9 +145,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 swipeRefreshLayout.setRefreshing(true);
-                List<ProductInfo> productsInfo = (List) intent.getParcelableArrayListExtra(ProductCheckerHandler.PRODUCTS_INFO_BROADCAST_LIST);
+                final List<ProductInfo> productsInfo = (List) intent.getParcelableArrayListExtra(PRODUCTS_INFO_REQUEST_RESULT_DATA);
 
-                if (productsInfo != null && productsInfo.size() > 0) {
+                if (productsInfo != null) {
                     ((ListProductInfoAdapter) listProductAdapter).refreshProductList(productsInfo);
                 }
 
@@ -204,8 +207,8 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        if (intent.getExtras().getInt(ProductNotificationUtil.NOTIFICATIONS_EXTRA_INTENT) == ProductNotificationUtil.NOTIFICATIONS_INTENT_CODE) {
-            ProductNotificationUtil.getNotificationManager(MainActivity.this).cancelAll();
+        if (intent.getExtras().getInt(NOTIFICATIONS_EXTRA_INTENT) == NOTIFICATIONS_INTENT_CODE) {
+            getNotificationManager(MainActivity.this).cancelAll();
         }
     }
 
@@ -241,9 +244,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadOrRefreshProductList() {
         swipeRefreshLayout.setRefreshing(true);
-        Intent zaraProductCheckerServiceIntent = new Intent(MainActivity.this, ZaraProductCheckerService.class);
-        zaraProductCheckerServiceIntent.setAction(ProductCheckerHandler.PRODUCTS_INFO_BROADCAST_LIST_ALWAYS);
-        MainActivity.this.startService(zaraProductCheckerServiceIntent);
+        ZaraProductCheckerJobIntentServiceHandler.startNowBackground(this.getApplication());
     }
 
     public void removedProductSnackbar(final ProductInfo productInfo, final int productPosition) {
