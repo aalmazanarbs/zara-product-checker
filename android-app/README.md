@@ -8,3 +8,4 @@ Android application to check the state of ZARA products and get notifications wh
 - Functionality to add product from existing one with different size or color
 - Support LiveData from ViewModel to product list
 - Use gson instead of org.json
+- "Open with Zara Product Checker" is not working due to chrome canonical page "feature"

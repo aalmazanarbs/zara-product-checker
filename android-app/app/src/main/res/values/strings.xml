@@ -42,6 +42,7 @@
     <string name="check_products_in_background_only_wifi">check_products_in_background_only_wifi</string>
     <string name="storage_clear_cache">storage_clear_cache</string>
     <!-- Notifications -->
+    <string name="products_changes_notifications_channel_name">Products changes</string>
     <string name="detect_changes_products_check">Changes in your products</string>
     <string name="has_changed_price_to"> has changed price to </string>
     <string name="is_now"> is now </string>
