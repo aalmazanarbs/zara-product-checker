@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimaryDark">#455A64</color>
-    <color name="colorPrimary">#607D8B</color>
-    <color name="card_background">#F2F2F2</color>455A64
+    <color name="accent">#000000</color>
+    <color name="primary_dark">#455A64</color>
+    <color name="primary">#607D8B</color>
+    <color name="soft_red">#fd6c67</color>
+    <color name="card_background">#F2F2F2</color>
     <color name="container_card_background">#E7E7E7</color>
     <color name="network_state_container_background">#6e6e6e</color>
-    <color name="network_state_disconnected">#fd6c67</color>
 </resources>
