@@ -156,7 +156,7 @@ public class ListProductInfoAdapter extends RecyclerView.Adapter<ListProductInfo
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                final int positionRemoved = viewHolder.getAdapterPosition();
+                final int positionRemoved = viewHolder.getBindingAdapterPosition();
                 ((MainActivity) mainActivity).removedProductSnackbar(initRemoveProductFromList(positionRemoved), positionRemoved);
             }
 

@@ -9,6 +9,7 @@ import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import androidx.annotation.NonNull;
+import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 import android.webkit.URLUtil;
@@ -18,8 +19,8 @@ import com.gade.zaraproductcheckerapp.R;
 final public class NetUtil {
 
     public static void shouldOpenURLInChromeCustomTabs(@NonNull Activity activity, @NonNull String url) {
-        CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
-                .setToolbarColor(ContextCompat.getColor(activity, R.color.colorPrimary))
+        final CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
+                .setColorScheme(CustomTabsIntent.COLOR_SCHEME_SYSTEM)
                 .setShowTitle(true)
                 .setStartAnimations(activity, android.R.anim.slide_in_left, android.R.anim.slide_in_left)
                 .setExitAnimations(activity, android.R.anim.slide_out_right, android.R.anim.slide_out_right)

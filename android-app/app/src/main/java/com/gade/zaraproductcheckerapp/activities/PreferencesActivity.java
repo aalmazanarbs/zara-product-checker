@@ -7,6 +7,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragment;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.preference.PreferenceFragmentCompat;
 
 import com.bumptech.glide.Glide;
 import com.gade.zaraproductcheckerapp.R;
@@ -31,10 +32,10 @@ public class PreferencesActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, new PreferencesFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PreferencesFragment()).commit();
     }
 
-    public static class PreferencesFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+    public static class PreferencesFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 
         private final CompositeDisposable disposables = new CompositeDisposable();
 

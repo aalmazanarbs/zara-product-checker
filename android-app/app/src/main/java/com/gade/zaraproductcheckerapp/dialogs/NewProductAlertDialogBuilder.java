@@ -47,7 +47,7 @@ public class NewProductAlertDialogBuilder extends AlertDialog.Builder {
     // Interface for Activities
     private OnAddNewProductAlertDialogListener onAddNewProductAlertDialogListener;
 
-    private class ZaraErrorException extends RuntimeException {
+    private static class ZaraErrorException extends RuntimeException {
         ZaraErrorException(String message) {
             super(message);
         }

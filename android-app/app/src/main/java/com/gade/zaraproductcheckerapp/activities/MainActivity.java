@@ -1,6 +1,7 @@
 package com.gade.zaraproductcheckerapp.activities;
 
-import androidx.lifecycle.ViewModelProviders;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        productInfoViewModel = ViewModelProviders.of(this).get(ProductInfoViewModel.class);
+        productInfoViewModel = new ViewModelProvider(this).get(ProductInfoViewModel.class);
 
         // Load interface
         setContentView(R.layout.activity_main);
@@ -256,7 +257,9 @@ public class MainActivity extends AppCompatActivity {
                 .setAction(MainActivity.this.getString(R.string.undo), view -> {
                     undoRemove[0] = true;
                     ((ListProductInfoAdapter) listProductAdapter).reAddProductPendingToList(productInfo, productPosition);
-                }).addCallback(new Snackbar.Callback() {
+                })
+                .setActionTextColor(ContextCompat.getColor(MainActivity.this, R.color.soft_red))
+                .addCallback(new Snackbar.Callback() {
                     @Override
                     public void onDismissed(Snackbar snackbar, int event) {
                         if (!undoRemove[0]) {
@@ -267,6 +270,7 @@ public class MainActivity extends AppCompatActivity {
                             );
                         }
                     }
-                }).show();
+                })
+                .show();
     }
 }
