@@ -37,12 +37,13 @@ public final class ProductJsonHelper {
     @SuppressWarnings("unused")
     public static Optional<ProductData> getProductDataFromJSONString(final String jsonResponse) {
         return getJSONObjectFromString(jsonResponse)
-                .map(productJSON -> ProductData.builder()
-                        .withApiId(productJSON.getString("id"))
-                        .withName(productJSON.getString("name"))
-                        .withImageUrl(getProductImageUrlFromFromJSONObject(productJSON))
-                        .build()
-                );
+                .map(productJSON -> {
+                    final ProductData.Builder productDataBuilder = ProductData.builder()
+                            .withApiId(productJSON.getString("id"))
+                            .withName(productJSON.getString("name"));
+                    addProductImageUrlsFromFromJSONObject(productJSON, productDataBuilder);
+                    return productDataBuilder.build();
+                });
     }
 
     @SuppressWarnings("unused")
@@ -56,7 +57,7 @@ public final class ProductJsonHelper {
     private static List<ProductStatus> getProductStatusesFromProductJsonArray(final JSONArray productJsonArray) {
         return convertJSONArrayToJSONObjectList(productJsonArray).stream().flatMap(productJSONObject -> {
             final String productID = productJSONObject.getString("id");
-            final JSONArray productColorsJSONArray = productJSONObject.getJSONObject("detail").getJSONArray("colors");
+            final JSONArray productColorsJSONArray = getJSONArrayColorsFromFromJSONObject(productJSONObject);
 
             return convertJSONArrayToJSONObjectList(productColorsJSONArray).stream().flatMap(productColorJSONObject -> {
                 final String productColor = productColorJSONObject.getString("name");
@@ -112,10 +113,14 @@ public final class ProductJsonHelper {
         return productJSON.getJSONObject("detail").getJSONArray("colors");
     }
 
-    private static String getProductImageUrlFromFromJSONObject(final JSONObject productJSON) {
-        final JSONObject firstXMedia = getJSONArrayColorsFromFromJSONObject(productJSON).getJSONObject(0).getJSONArray("xmedia").getJSONObject(0);
-        return buildProductImageURL(firstXMedia.getString("path"),
-                                    firstXMedia.getString("name"),
-                                    firstXMedia.getString("timestamp"));
+    private static void addProductImageUrlsFromFromJSONObject(final JSONObject productJSON, final ProductData.Builder productDataBuilder) {
+        convertJSONArrayToJSONObjectList(getJSONArrayColorsFromFromJSONObject(productJSON)).forEach(productColorJSONObject -> {
+            final JSONObject firstXMedia = productColorJSONObject.getJSONArray("xmedia").getJSONObject(0);
+            productDataBuilder.addImage(
+                    productColorJSONObject.getString("name"),
+                    buildProductImageURL(firstXMedia.getString("path"),
+                                         firstXMedia.getString("name"),
+                                         firstXMedia.getString("timestamp")));
+        });
     }
 }

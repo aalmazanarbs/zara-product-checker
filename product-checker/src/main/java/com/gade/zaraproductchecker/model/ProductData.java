@@ -2,6 +2,8 @@ package com.gade.zaraproductchecker.model;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.gade.zaraproductchecker.util.StringUtil.isNotEmpty;
 
@@ -9,12 +11,12 @@ public final class ProductData {
 
     private final String apiId;
     private final String name;
-    private final String imageUrl;
+    private final List<ProductImage> productImages;
 
     private ProductData(final Builder builder) {
         apiId = builder.apiId;
         name = builder.name;
-        imageUrl = builder.imageUrl;
+        productImages = builder.productImages;
     }
 
     @SuppressWarnings("unused")
@@ -28,8 +30,8 @@ public final class ProductData {
     }
 
     @SuppressWarnings("unused")
-    public String getImageUrl() {
-        return imageUrl;
+    public String findUrlByColor(final String color) {
+        return productImages.stream().filter(productImage -> color.equals(productImage.getColor())).findFirst().get().getUrl();
     }
 
     public static Builder builder() {
@@ -39,7 +41,7 @@ public final class ProductData {
     public static final class Builder {
         private String apiId;
         private String name = "No name founded";
-        private String imageUrl;
+        private final List<ProductImage> productImages = new ArrayList<>();
 
         private Builder() { }
 
@@ -55,14 +57,12 @@ public final class ProductData {
             return this;
         }
 
-        public Builder withImageUrl(final String imageUrl) {
+        public void addImage(final String color, final String imageUrl) {
             try {
-                this.imageUrl = new URI(imageUrl).toString();
+                productImages.add(new ProductImage(color, new URI(imageUrl).toString()));
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
-
-            return this;
         }
 
         public ProductData build() {

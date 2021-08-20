@@ -241,7 +241,7 @@ public class NewProductAlertDialogBuilder extends AlertDialog.Builder {
                     productInfo.setApiId(productData.getApiId());
                     productInfo.setName(productData.getName());
                     productInfo.setUrl(productURL);
-                    productInfo.setImageUrl(productData.getImageUrl());
+                    productInfo.setImageUrl(productData.findUrlByColor(desiredColor));
                     productInfo.setDesiredSize(desiredSize);
                     productInfo.setDesiredColor(desiredColor);
                     productInfo.setAvailability(productStatus.getAvailability());
