@@ -113,7 +113,7 @@ public final class ProductJsonHelper {
     }
 
     private static String getProductImageUrlFromFromJSONObject(final JSONObject productJSON) {
-        final JSONObject firstXMedia = productJSON.getJSONArray("xmedia").getJSONObject(0);
+        final JSONObject firstXMedia = getJSONArrayColorsFromFromJSONObject(productJSON).getJSONObject(0).getJSONArray("xmedia").getJSONObject(0);
         return buildProductImageURL(firstXMedia.getString("path"),
                                     firstXMedia.getString("name"),
                                     firstXMedia.getString("timestamp"));

@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public final class ApiHelper {
 
     // Check url like https://www.zara.com/es/es/blusa-bordado-perforado-p07521067.html?v1=5671069&v2=805003
-    private static final Pattern ZARA_URL_PATTERN = Pattern.compile("\\w*\\\\?v1=([0-9]{7,8})");
+    private static final Pattern ZARA_URL_PATTERN = Pattern.compile("\\w*\\\\?v1=([0-9]{1,20})");
 
     @SuppressWarnings("unused")
     public static Optional<ProductStatus> searchProductStatus(final List<ProductStatus> productStatuses, final String APIId, final String size, final String color) {
