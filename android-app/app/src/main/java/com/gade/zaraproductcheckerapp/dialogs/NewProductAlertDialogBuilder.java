@@ -59,11 +59,6 @@ public class NewProductAlertDialogBuilder extends AlertDialog.Builder {
         this.newProductDialogState = new NewProductDialogState(incomingURL);
     }
 
-    @Override
-    public AlertDialog create() {
-        throw new UnsupportedOperationException(getContext().getString(R.string.dialog_constructor_error));
-    }
-
     public void setOnAddNewProductAlertDialogListener(@NonNull OnAddNewProductAlertDialogListener onAddNewProductAlertDialogListener) {
         this.onAddNewProductAlertDialogListener = onAddNewProductAlertDialogListener;
     }

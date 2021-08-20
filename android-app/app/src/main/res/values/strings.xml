@@ -15,7 +15,6 @@
     <string name="product_duplicated">Duplicated product %1$s size %2$s color %3$s</string>
     <string name="products_duplicated">One or more of the products to add are duplicated</string>
     <!-- New Product Dialog Builder -->
-    <string name="dialog_constructor_error">CustomAlertDialogBuilder.create(): use show() instead..</string>
     <string name="dialog_search">Search</string>
     <string name="dialog_add">Add</string>
     <string name="dialog_cancel">Cancel</string>
