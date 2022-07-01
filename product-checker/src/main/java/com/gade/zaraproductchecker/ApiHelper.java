@@ -38,7 +38,7 @@ public final class ApiHelper {
 
     static String buildProductInfoAPIURL(final Set<String> productIDs) {
         final StringBuilder url = new StringBuilder(UrlConfigurationLoader.get().getAPIBase());
-        final Iterator productIDsIterator = productIDs.iterator();
+        final Iterator<String> productIDsIterator = productIDs.iterator();
         if (productIDsIterator.hasNext()) {
             url.append(UrlConfigurationLoader.get().getAPIParam()).append(productIDsIterator.next());
         }

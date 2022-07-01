@@ -172,8 +172,8 @@ public class NewProductAlertDialogBuilder extends AlertDialog.Builder {
         ifPresentOrElse(
                 ProductApi.doCall(productURL),
                 zaraJSONResponse -> {
-                    final List<String> sizes = ProductJsonHelper.getSizesFromFromJSONString(zaraJSONResponse);
-                    final List<String> colors = ProductJsonHelper.getColorsFromFromJSONString(zaraJSONResponse);
+                    final List<String> sizes = ProductJsonHelper.getSizesFromJSONString(zaraJSONResponse);
+                    final List<String> colors = ProductJsonHelper.getColorsFromJSONString(zaraJSONResponse);
                     if (sizes.isEmpty() || colors.isEmpty()) {
                         throw new ZaraErrorException(getContext().getString(R.string.dialog_zara_response_error));
                     }

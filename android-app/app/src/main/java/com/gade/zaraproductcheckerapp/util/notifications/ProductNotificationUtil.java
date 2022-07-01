@@ -13,6 +13,8 @@ import com.gade.zaraproductchecker.UIFormatter;
 import com.gade.zaraproductcheckerapp.activities.MainActivity;
 import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
 
+import static com.gade.zaraproductchecker.ProductJsonHelper.UNDEFINED;
+
 public class ProductNotificationUtil {
 
     public static final int NOTIFICATIONS_INTENT_CODE = 69;
@@ -45,7 +47,7 @@ public class ProductNotificationUtil {
     }
 
     private static String generateProductInfo(@NonNull ProductInfo productInfo) {
-        return productInfo.getDesiredSize() + " " + productInfo.getDesiredColor();
+        return productInfo.getDesiredSize() + (productInfo.getDesiredColor().equals(UNDEFINED) ? "" : " " + productInfo.getDesiredColor());
     }
 
     static PendingIntent generateOpenMainActivityPendingIntent(@NonNull Context context) {

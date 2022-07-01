@@ -4,7 +4,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.preference.Preference;
-import androidx.preference.PreferenceFragment;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceFragmentCompat;

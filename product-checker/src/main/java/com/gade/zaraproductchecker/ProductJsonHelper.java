@@ -14,11 +14,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.gade.zaraproductchecker.ApiHelper.buildProductImageURL;
+import static com.gade.zaraproductchecker.util.StringUtil.isEmpty;
 
 public final class ProductJsonHelper {
 
+    public static final String UNDEFINED = "Undefined";
+
     @SuppressWarnings("unused")
-    public static List<String> getSizesFromFromJSONString(final String jsonResponse) {
+    public static List<String> getSizesFromJSONString(final String jsonResponse) {
         return getJSONObjectFromString(jsonResponse)
                 .map(productJSON -> {
                     final JSONArray productSizes = getJSONArrayColorsFromFromJSONObject(productJSON).getJSONObject(0).getJSONArray("sizes");
@@ -28,9 +31,9 @@ public final class ProductJsonHelper {
     }
 
     @SuppressWarnings("unused")
-    public static List<String> getColorsFromFromJSONString(final String jsonResponse) {
+    public static List<String> getColorsFromJSONString(final String jsonResponse) {
         return getJSONObjectFromString(jsonResponse)
-                .map(productJSON -> jsonArrayToNameList(getJSONArrayColorsFromFromJSONObject(productJSON)))
+                .map(productJSON -> jsonArrayToColorNameList(getJSONArrayColorsFromFromJSONObject(productJSON)))
                 .orElseGet(Collections::emptyList);
     }
 
@@ -60,7 +63,7 @@ public final class ProductJsonHelper {
             final JSONArray productColorsJSONArray = getJSONArrayColorsFromFromJSONObject(productJSONObject);
 
             return convertJSONArrayToJSONObjectList(productColorsJSONArray).stream().flatMap(productColorJSONObject -> {
-                final String productColor = productColorJSONObject.getString("name");
+                final String productColor = getColorNameOrUndefined(productColorJSONObject);
                 final JSONArray productSizesJSONArray = productColorJSONObject.getJSONArray("sizes");
 
                 return convertJSONArrayToJSONObjectList(productSizesJSONArray).stream().map(productSizeJSONObject -> {
@@ -84,6 +87,12 @@ public final class ProductJsonHelper {
         return convertJSONArrayToJSONObjectList(jsonArray).stream()
                 .map(jsonObject -> jsonObject.getString("name"))
                 .filter(StringUtil::isNotEmpty)
+                .collect(Collectors.toList());
+    }
+
+    private static List<String> jsonArrayToColorNameList(final JSONArray jsonArray) {
+        return convertJSONArrayToJSONObjectList(jsonArray).stream()
+                .map(ProductJsonHelper::getColorNameOrUndefined)
                 .collect(Collectors.toList());
     }
 
@@ -117,10 +126,15 @@ public final class ProductJsonHelper {
         convertJSONArrayToJSONObjectList(getJSONArrayColorsFromFromJSONObject(productJSON)).forEach(productColorJSONObject -> {
             final JSONObject firstXMedia = productColorJSONObject.getJSONArray("xmedia").getJSONObject(0);
             productDataBuilder.addImage(
-                    productColorJSONObject.getString("name"),
+                    getColorNameOrUndefined(productColorJSONObject),
                     buildProductImageURL(firstXMedia.getString("path"),
                                          firstXMedia.getString("name"),
                                          firstXMedia.getString("timestamp")));
         });
+    }
+
+    private static String getColorNameOrUndefined(final JSONObject jsonObject) {
+        final String color = jsonObject.getString("name");
+        return isEmpty(color) ? UNDEFINED : color;
     }
 }

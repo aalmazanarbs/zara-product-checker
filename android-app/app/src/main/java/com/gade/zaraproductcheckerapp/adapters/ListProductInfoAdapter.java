@@ -26,6 +26,7 @@ import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gade.zaraproductchecker.ProductJsonHelper.UNDEFINED;
 import static com.gade.zaraproductcheckerapp.util.NetUtil.shouldOpenURLInChromeCustomTabs;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.DEFAULT_IMAGE_REQUEST_OPTIONS;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.showShortToast;
@@ -102,7 +103,7 @@ public class ListProductInfoAdapter extends RecyclerView.Adapter<ListProductInfo
         productName.setText(productInfo.getName());
         productSize.setText(productInfo.getDesiredSize());
         productSizeInfo.setText(mainActivity.getResources().getString(R.string.color_and_availability,
-                                                                      productInfo.getDesiredColor(),
+                                                                      productInfo.getDesiredColor().equals(UNDEFINED) ? "" : productInfo.getDesiredColor(),
                                                                       UIFormatter.productAvailability(productInfo.getAvailability())));
         productPriceInfo.setText(UIFormatter.productPrice(productInfo.getPrice()));
 
@@ -215,7 +216,7 @@ public class ListProductInfoAdapter extends RecyclerView.Adapter<ListProductInfo
                                                                     productInfo.getDesiredSize()));
 
         ((TextView) moreInfoAlertDialogView.findViewById(R.id.product_info_size)).setText(mainActivity.getResources().getString(R.string.color_and_availability,
-                                                                                                                                productInfo.getDesiredColor(),
+                                                                                                                                productInfo.getDesiredColor().equals(UNDEFINED) ? "" : productInfo.getDesiredColor(),
                                                                                                                                 UIFormatter.productAvailability(productInfo.getAvailability())));
         ((TextView) moreInfoAlertDialogView.findViewById(R.id.product_info_price)).setText(UIFormatter.productPrice(productInfo.getPrice()));
 
