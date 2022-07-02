@@ -1,4 +1,4 @@
-package com.gade.zaraproductcheckerapp.util.notifications;
+package com.gade.zaraproductcheckerapp.notifications;
 
 import android.content.Context;
 import android.os.Build;
@@ -19,7 +19,7 @@ public class ProductNotificationManager {
         }
     }
 
-    public static void notify(@NonNull Context context, @NonNull ProductInfo productInfo) {
+    public static void notify(@NonNull final Context context, @NonNull final ProductInfo productInfo) {
         productNotify.notify(context, productInfo);
     }
 }

@@ -1,4 +1,4 @@
-package com.gade.zaraproductcheckerapp.util.notifications;
+package com.gade.zaraproductcheckerapp.notifications;
 
 import android.app.Notification;
 
@@ -21,25 +21,22 @@ import com.gade.zaraproductcheckerapp.R;
 import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
 
 import static android.app.NotificationManager.IMPORTANCE_HIGH;
+import static com.gade.zaraproductcheckerapp.notifications.NotificationUtil.generateOpenMainActivityPendingIntent;
+import static com.gade.zaraproductcheckerapp.notifications.NotificationUtil.getNotificationManager;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.DEFAULT_IMAGE_REQUEST_OPTIONS;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.copy;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.from;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.getCircleBitmap;
-import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.generateOpenMainActivityPendingIntent;
-import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.generatePriceChangedMessage;
-import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.generateSizeChangedMessage;
-import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.getNotificationManager;
-import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.numberOfActiveNotifications;
+import static com.gade.zaraproductcheckerapp.notifications.ProductNotificationUtil.generatePriceChangedMessage;
+import static com.gade.zaraproductcheckerapp.notifications.ProductNotificationUtil.generateSizeChangedMessage;
+import static com.gade.zaraproductcheckerapp.notifications.ProductNotificationUtil.getNotificationsByGroup;
 
 public class ProductNotificationNougat implements ProductNotify {
 
-    private final static String PRODUCT_CHANGES_NOTIFICATIONS_CHANNEL_ID = "PRODUCT_CHANGES_NOTIFICATIONS_CHANNEL_ID";
-    private final static String PRODUCT_CHANGES_NOTIFICATIONS_GROUP_KEY = "PRODUCT_CHANGES_NOTIFICATIONS_GROUP_KEY";
-
     @Override
-    public void notify(@NonNull Context context, @NonNull ProductInfo productInfo) {
+    public void notify(@NonNull final Context context, @NonNull final ProductInfo productInfo) {
         final NotificationManagerCompat notificationManagerCompat = getNotificationManager(context);
-        final int numberOfActiveNotifications = numberOfActiveNotifications(context);
+        final int numberOfActiveNotifications = getNotificationsByGroup(context, getProductChangesGroup()).size();
 
         if (numberOfActiveNotifications == 0) {
             showStackerNotification(notificationManagerCompat, context);
@@ -58,28 +55,28 @@ public class ProductNotificationNougat implements ProductNotify {
     }
 
     private void showStackerNotification(final NotificationManagerCompat notificationManagerCompat, final Context context) {
-        if (Build.VERSION.SDK_INT >= 26) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createOrUpdateNotificationChannel(notificationManagerCompat, context);
         }
 
-        final NotificationCompat.Builder notificationCompatStackerBuilder = new NotificationCompat.Builder(context, PRODUCT_CHANGES_NOTIFICATIONS_CHANNEL_ID)
+        final Notification notification = new NotificationCompat.Builder(context, getProductChangesChannelId())
                 .setGroupSummary(true)
-                .setGroup(PRODUCT_CHANGES_NOTIFICATIONS_GROUP_KEY)
+                .setGroup(getProductChangesGroup())
                 .setAutoCancel(true)
-                .setContentIntent(generateOpenMainActivityPendingIntent(context))
+                .setContentIntent(generateOpenMainActivityPendingIntent(context, OPERATIONS_ID, PRODUCT_CHANGES_NOTIFICATIONS_INTENT_EXTRA_DATA))
                 .setSubText(context.getString(R.string.detect_changes_products_check))
                 .setSmallIcon(R.drawable.ic_notification)
-                .setShowWhen(false);
+                .setShowWhen(false)
+                .build();
 
-        final Notification notificationStacker = notificationCompatStackerBuilder.build();
-        notificationStacker.flags |= NotificationCompat.FLAG_ONLY_ALERT_ONCE | NotificationCompat.FLAG_AUTO_CANCEL;
+        notification.flags |= NotificationCompat.FLAG_ONLY_ALERT_ONCE | NotificationCompat.FLAG_AUTO_CANCEL;
 
-        notificationManagerCompat.notify(0, notificationStacker);
+        notificationManagerCompat.notify(OPERATIONS_ID, notification);
     }
 
-    @RequiresApi(26)
+    @RequiresApi(Build.VERSION_CODES.O)
     private void createOrUpdateNotificationChannel(final NotificationManagerCompat notificationManagerCompat, final Context context) {
-        final NotificationChannel notificationChannel = new NotificationChannel(PRODUCT_CHANGES_NOTIFICATIONS_CHANNEL_ID,
+        final NotificationChannel notificationChannel = new NotificationChannel(getProductChangesChannelId(),
                                                                                 context.getString(R.string.products_changes_notifications_channel_name),
                                                                                 IMPORTANCE_HIGH);
         notificationChannel.enableLights(true);
@@ -121,22 +118,22 @@ public class ProductNotificationNougat implements ProductNotify {
                                          final String message,
                                          final int notificationId,
                                          final Bitmap productImage) {
-        final NotificationCompat.Builder notificationCompatStackedBuilder = new NotificationCompat.Builder(context, PRODUCT_CHANGES_NOTIFICATIONS_CHANNEL_ID)
-                .setGroup(PRODUCT_CHANGES_NOTIFICATIONS_GROUP_KEY)
+        final Notification notification = new NotificationCompat.Builder(context, getProductChangesChannelId())
+                .setGroup(getProductChangesGroup())
                 .setSmallIcon(R.drawable.ic_notification)
                 .setDefaults(NotificationCompat.DEFAULT_LIGHTS | NotificationCompat.DEFAULT_SOUND)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setAutoCancel(true)
-                .setContentIntent(generateOpenMainActivityPendingIntent(context))
+                .setContentIntent(generateOpenMainActivityPendingIntent(context, OPERATIONS_ID, PRODUCT_CHANGES_NOTIFICATIONS_INTENT_EXTRA_DATA))
                 .setWhen(System.currentTimeMillis())
                 .setShowWhen(true)
                 .setContentTitle(productInfo.getName())
                 .setContentText(message)
-                .setLargeIcon(getCircleBitmap(productImage));
+                .setLargeIcon(getCircleBitmap(productImage))
+                .build();
 
-        final Notification notificationStacked = notificationCompatStackedBuilder.build();
-        notificationStacked.flags |= NotificationCompat.FLAG_ONLY_ALERT_ONCE | NotificationCompat.FLAG_AUTO_CANCEL;
+        notification.flags |= NotificationCompat.FLAG_ONLY_ALERT_ONCE | NotificationCompat.FLAG_AUTO_CANCEL;
 
-        notificationManagerCompat.notify(notificationId, notificationStacked);
+        notificationManagerCompat.notify(notificationId, notification);
     }
 }

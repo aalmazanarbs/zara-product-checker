@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import com.gade.zaraproductcheckerapp.R;
+import com.gade.zaraproductcheckerapp.notifications.CheckProductsNotificationManager;
 import com.gade.zaraproductcheckerapp.receivers.ZaraProductCheckerReceiver;
 
 import java.util.Optional;
@@ -21,6 +22,7 @@ public class ZaraProductCheckerJobIntentServiceHandler {
     static final String PRODUCTS_INFO_REQUEST_RESULT_DATA_ALWAYS = "com.gade.zaraproductchecker.productsinfo.result.data.always";
 
     private final static long CHECKER_INTERVAL_MS = 5 * 60 * 1000; // First value indicate the minutes
+    private static final CheckProductsNotificationManager checkProductsNotificationManager = new CheckProductsNotificationManager();
 
     public static void startNowBackground(@NonNull final Context context) {
         final Intent zaraProductCheckerIntent = new Intent(context, ZaraProductCheckerJobIntentService.class);
@@ -38,6 +40,9 @@ public class ZaraProductCheckerJobIntentServiceHandler {
         if (checkProductsInBackground(context)) {
             final long triggerAtMillis = System.currentTimeMillis() + CHECKER_INTERVAL_MS;
             alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, createPendingIntent(context));
+            checkProductsNotificationManager.display(context);
+        } else {
+            checkProductsNotificationManager.remove(context);
         }
     }
 

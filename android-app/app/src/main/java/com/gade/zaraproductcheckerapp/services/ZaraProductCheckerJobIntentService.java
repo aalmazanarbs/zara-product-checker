@@ -16,7 +16,7 @@ import com.gade.zaraproductcheckerapp.R;
 import com.gade.zaraproductcheckerapp.db.AppDatabase;
 import com.gade.zaraproductcheckerapp.db.daos.ProductInfoDao;
 import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
-import com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationManager;
+import com.gade.zaraproductcheckerapp.notifications.ProductNotificationManager;
 
 import java.util.ArrayList;
 import java.util.List;

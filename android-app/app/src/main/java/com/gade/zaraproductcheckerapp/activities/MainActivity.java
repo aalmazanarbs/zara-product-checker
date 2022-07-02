@@ -12,6 +12,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import com.gade.zaraproductcheckerapp.notifications.ProductNotify;
 import com.gade.zaraproductcheckerapp.services.ZaraProductCheckerJobIntentServiceHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -40,6 +41,8 @@ import java.util.List;
 
 import io.reactivex.disposables.CompositeDisposable;
 
+import static com.gade.zaraproductcheckerapp.notifications.NotificationUtil.NOTIFICATIONS_INTENT_EXTRA_DATA_NAME;
+import static com.gade.zaraproductcheckerapp.notifications.NotificationUtil.getNotificationManager;
 import static com.gade.zaraproductcheckerapp.services.ZaraProductCheckerJobIntentService.PRODUCTS_INFO_REQUEST_RESULT_BROADCAST;
 import static com.gade.zaraproductcheckerapp.services.ZaraProductCheckerJobIntentService.PRODUCTS_INFO_REQUEST_RESULT_DATA;
 import static com.gade.zaraproductcheckerapp.util.NetUtil.isValidURL;
@@ -48,9 +51,6 @@ import static com.gade.zaraproductcheckerapp.util.UIUtil.animateViewSlideDown;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.animateViewToZero;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.showMessageSnackbar;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.showShortToast;
-import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.NOTIFICATIONS_EXTRA_INTENT;
-import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.NOTIFICATIONS_INTENT_CODE;
-import static com.gade.zaraproductcheckerapp.util.notifications.ProductNotificationUtil.getNotificationManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        if (intent.getExtras().getInt(NOTIFICATIONS_EXTRA_INTENT) == NOTIFICATIONS_INTENT_CODE) {
+        if (intent.getExtras().getInt(NOTIFICATIONS_INTENT_EXTRA_DATA_NAME) == ProductNotify.PRODUCT_CHANGES_NOTIFICATIONS_INTENT_EXTRA_DATA) {
             getNotificationManager(MainActivity.this).cancelAll();
         }
     }
