@@ -12,6 +12,8 @@ public final class UIFormatter {
     private static final String IN_STOCK_DISPLAY = "In Stock";
     private static final String COMING_SOON = "coming_soon";
     private static final String COMING_SOON_DISPLAY = "Coming Soon";
+    private static final String LOW_ON_STOCK = "low_on_stock";
+    private static final String LOW_ON_STOCK_DISPLAY = "Low on stock";
     private static final String UNKNOWN_DISPLAY = "Unknown";
 
     @SuppressWarnings("unused")
@@ -36,6 +38,8 @@ public final class UIFormatter {
                 return IN_STOCK_DISPLAY;
             case COMING_SOON:
                 return COMING_SOON_DISPLAY;
+            case LOW_ON_STOCK:
+                return LOW_ON_STOCK_DISPLAY;
             default:
                 return UNKNOWN_DISPLAY;
         }
