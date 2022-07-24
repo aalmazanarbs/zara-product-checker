@@ -12,7 +12,6 @@ import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.gade.zaraproductchecker.ProductJsonHelper.UNDEFINED;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
@@ -42,6 +41,6 @@ public class ProductNotificationUtil {
     }
 
     private static String generateProductInfo(@NonNull final ProductInfo productInfo) {
-        return productInfo.getDesiredSize() + (productInfo.getDesiredColor().equals(UNDEFINED) ? "" : " " + productInfo.getDesiredColor());
+        return productInfo.getDesiredSize() + " " + productInfo.getDesiredColor();
     }
 }

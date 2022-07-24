@@ -18,8 +18,6 @@ import static com.gade.zaraproductchecker.util.StringUtil.isEmpty;
 
 public final class ProductJsonHelper {
 
-    public static final String UNDEFINED = "Undefined";
-
     @SuppressWarnings("unused")
     public static List<String> getSizesFromJSONString(final String jsonResponse) {
         return getJSONObjectFromString(jsonResponse)
@@ -63,7 +61,7 @@ public final class ProductJsonHelper {
             final JSONArray productColorsJSONArray = getJSONArrayColorsFromFromJSONObject(productJSONObject);
 
             return convertJSONArrayToJSONObjectList(productColorsJSONArray).stream().flatMap(productColorJSONObject -> {
-                final String productColor = getColorNameOrUndefined(productColorJSONObject);
+                final String productColor = getColorNameOrReference(productColorJSONObject);
                 final JSONArray productSizesJSONArray = productColorJSONObject.getJSONArray("sizes");
 
                 return convertJSONArrayToJSONObjectList(productSizesJSONArray).stream().map(productSizeJSONObject -> {
@@ -92,7 +90,7 @@ public final class ProductJsonHelper {
 
     private static List<String> jsonArrayToColorNameList(final JSONArray jsonArray) {
         return convertJSONArrayToJSONObjectList(jsonArray).stream()
-                .map(ProductJsonHelper::getColorNameOrUndefined)
+                .map(ProductJsonHelper::getColorNameOrReference)
                 .collect(Collectors.toList());
     }
 
@@ -126,15 +124,15 @@ public final class ProductJsonHelper {
         convertJSONArrayToJSONObjectList(getJSONArrayColorsFromFromJSONObject(productJSON)).forEach(productColorJSONObject -> {
             final JSONObject firstXMedia = productColorJSONObject.getJSONArray("xmedia").getJSONObject(0);
             productDataBuilder.addImage(
-                    getColorNameOrUndefined(productColorJSONObject),
+                    getColorNameOrReference(productColorJSONObject),
                     buildProductImageURL(firstXMedia.getString("path"),
                                          firstXMedia.getString("name"),
                                          firstXMedia.getString("timestamp")));
         });
     }
 
-    private static String getColorNameOrUndefined(final JSONObject jsonObject) {
+    private static String getColorNameOrReference(final JSONObject jsonObject) {
         final String color = jsonObject.getString("name");
-        return isEmpty(color) ? UNDEFINED : color;
+        return isEmpty(color) ? jsonObject.getString("reference") : color;
     }
 }

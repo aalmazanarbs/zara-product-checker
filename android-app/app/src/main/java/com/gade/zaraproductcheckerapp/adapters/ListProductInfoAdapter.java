@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.ItemTouchHelper;
+
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +28,7 @@ import com.gade.zaraproductcheckerapp.db.entities.ProductInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gade.zaraproductchecker.ProductJsonHelper.UNDEFINED;
+import static android.util.TypedValue.COMPLEX_UNIT_SP;
 import static com.gade.zaraproductcheckerapp.util.NetUtil.shouldOpenURLInChromeCustomTabs;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.DEFAULT_IMAGE_REQUEST_OPTIONS;
 import static com.gade.zaraproductcheckerapp.util.UIUtil.showShortToast;
@@ -101,9 +103,12 @@ public class ListProductInfoAdapter extends RecyclerView.Adapter<ListProductInfo
              .into(productImage);
 
         productName.setText(productInfo.getName());
+        if (productInfo.getDesiredSize().length() > 2) {
+            productSize.setTextSize(COMPLEX_UNIT_SP, 20);
+        }
         productSize.setText(productInfo.getDesiredSize());
         productSizeInfo.setText(mainActivity.getResources().getString(R.string.color_and_availability,
-                                                                      productInfo.getDesiredColor().equals(UNDEFINED) ? "" : productInfo.getDesiredColor(),
+                                                                      productInfo.getDesiredColor(),
                                                                       UIFormatter.productAvailability(productInfo.getAvailability())));
         productPriceInfo.setText(UIFormatter.productPrice(productInfo.getPrice()));
 
@@ -216,7 +221,7 @@ public class ListProductInfoAdapter extends RecyclerView.Adapter<ListProductInfo
                                                                     productInfo.getDesiredSize()));
 
         ((TextView) moreInfoAlertDialogView.findViewById(R.id.product_info_size)).setText(mainActivity.getResources().getString(R.string.color_and_availability,
-                                                                                                                                productInfo.getDesiredColor().equals(UNDEFINED) ? "" : productInfo.getDesiredColor(),
+                                                                                                                                productInfo.getDesiredColor(),
                                                                                                                                 UIFormatter.productAvailability(productInfo.getAvailability())));
         ((TextView) moreInfoAlertDialogView.findViewById(R.id.product_info_price)).setText(UIFormatter.productPrice(productInfo.getPrice()));
 
