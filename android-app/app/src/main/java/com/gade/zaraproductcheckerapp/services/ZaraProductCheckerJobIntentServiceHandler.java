@@ -15,13 +15,12 @@ import com.gade.zaraproductcheckerapp.receivers.ZaraProductCheckerReceiver;
 
 import java.util.Optional;
 
+import static com.gade.zaraproductcheckerapp.services.ZaraProductCheckerJobIntentService.PRODUCTS_INFO_REQUEST_RESULT_DATA_ALWAYS;
 import static java.lang.Boolean.TRUE;
 
 public class ZaraProductCheckerJobIntentServiceHandler {
 
-    static final String PRODUCTS_INFO_REQUEST_RESULT_DATA_ALWAYS = "com.gade.zaraproductchecker.productsinfo.result.data.always";
-
-    private final static long CHECKER_INTERVAL_MS = 5 * 60 * 1000; // First value indicate the minutes
+    private static final long CHECKER_INTERVAL_MS = 5 * 60 * 1000; // First value indicate the minutes
     private static final CheckProductsNotificationManager checkProductsNotificationManager = new CheckProductsNotificationManager();
 
     public static void startNowBackground(@NonNull final Context context) {

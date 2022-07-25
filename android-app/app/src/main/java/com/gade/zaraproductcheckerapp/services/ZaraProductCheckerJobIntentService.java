@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import static com.gade.zaraproductchecker.ApiHelper.searchProductStatus;
 import static com.gade.zaraproductchecker.util.OptionalUtil.ifPresentOrElse;
 import static com.gade.zaraproductchecker.util.StringUtil.isNotEmpty;
-import static com.gade.zaraproductcheckerapp.services.ZaraProductCheckerJobIntentServiceHandler.PRODUCTS_INFO_REQUEST_RESULT_DATA_ALWAYS;
 import static com.gade.zaraproductcheckerapp.util.NetUtil.hasNetworkConnection;
 import static com.gade.zaraproductcheckerapp.util.NetUtil.isConnectedToWifi;
 import static java.lang.Boolean.FALSE;
@@ -36,6 +35,7 @@ public class ZaraProductCheckerJobIntentService extends JobIntentService {
 
     public static final String PRODUCTS_INFO_REQUEST_RESULT_BROADCAST = "com.gade.zaraproductchecker.productsinfo.result.broadcast";
     public static final String PRODUCTS_INFO_REQUEST_RESULT_DATA = "com.gade.zaraproductchecker.productsinfo.result.data";
+    public static final String PRODUCTS_INFO_REQUEST_RESULT_DATA_ALWAYS = "com.gade.zaraproductchecker.productsinfo.result.data.always";
 
     private static final int JOB_ID = 69;
 
